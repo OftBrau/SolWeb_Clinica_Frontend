@@ -1,0 +1,503 @@
+<!-- HERO -->
+<section id="inicio" class="hero-section">
+
+  <!-- IZQUIERDA -->
+  <div class="hero-left">
+
+    <!-- Bloque central -->
+    <div>
+      <!-- Logo -->
+      <div class="hero-logo d-flex align-items-center gap-3">
+        <img [src]="logoUpn" alt="Logo UPN"
+             style="height:48px; width:auto; object-fit:contain;" />
+        <div>
+          <p class="fw-bold mb-0" style="font-size:1.1rem;">Clínica UPN</p>
+          <p class="text-muted mb-0" style="font-size:11px; letter-spacing:2px;">
+            SALUD UNIVERSITARIA
+          </p>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <h1 class="hero-title fw-bold">
+        Tu salud,<br>
+        <span class="text-primary">nuestra prioridad</span>
+      </h1>
+
+      <div class="hero-line"></div>
+
+      <p class="hero-subtitle">
+        Atención médica integral con tecnología de vanguardia para estudiantes
+        y comunidad UPN. Especialistas comprometidos con tu bienestar.
+      </p>
+
+      <a routerLink="/login" class="hero-cta">
+        Solicitar cita <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Footer contacto pegado abajo -->
+    <div class="hero-footer d-flex flex-wrap gap-4">
+      <div class="d-flex align-items-center gap-2 text-muted small">
+        <i class="bi bi-globe text-primary"></i>
+        <span>clinica.upn.edu.pe</span>
+      </div>
+      <div class="d-flex align-items-center gap-2 text-muted small">
+        <i class="bi bi-telephone-fill text-primary"></i>
+        <span>(01) 123-4567</span>
+      </div>
+      <div class="d-flex align-items-center gap-2 text-muted small">
+        <i class="bi bi-geo-alt-fill text-primary"></i>
+        <span>Av. Universitaria, Lima</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DERECHA -->
+  <div class="hero-right"></div>
+
+</section>
+<!-- SERVICIOS -->
+<section id="servicios" class="py-5" style="background:#f8f9fa; overflow:hidden;">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="d-flex align-items-end justify-content-between mb-5">
+      <div>
+        <h2 class="fw-bold mb-2">Nuestros Servicios</h2>
+        <p class="text-muted mb-0" style="max-width:480px;">
+          Especialidades disponibles para toda la comunidad universitaria UPN.
+        </p>
+      </div>
+      <!-- Flechas desktop -->
+      <div class="d-none d-md-flex gap-2">
+        <button class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
+                style="width:40px; height:40px;"
+                (click)="servicioScrollPrev()">
+          <i class="bi bi-arrow-left" style="font-size:.9rem;"></i>
+        </button>
+        <button class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
+                style="width:40px; height:40px;"
+                (click)="servicioScrollNext()">
+          <i class="bi bi-arrow-right" style="font-size:.9rem;"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Carrusel full-width -->
+  <div class="servicios-track-wrapper">
+    <div class="servicios-track"
+         [style.transform]="'translateX(calc(-' + servicioIndex() + ' * 340px))'">
+      @for (s of servicios; track s.titulo; let i = $index) {
+        <div class="servicio-card" [class.servicio-card--active]="i === servicioIndex()">
+          <!-- Imagen con overlay -->
+          <div class="servicio-img-wrap">
+            <img [src]="s.imagen" [alt]="s.titulo" class="servicio-img" />
+            <div class="servicio-overlay"></div>
+            <!-- Contenido sobre imagen -->
+            <div class="servicio-content">
+              <div class="servicio-icon-wrap mb-3">
+                <i class="bi {{ s.icon }}"></i>
+              </div>
+              <h5 class="fw-bold text-white mb-2">{{ s.titulo }}</h5>
+              <p class="text-white mb-3" style="font-size:.85rem; opacity:.85; line-height:1.6;">
+                {{ s.desc }}
+              </p>
+              <a href="#contacto" class="servicio-cta">
+                Más información <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Dots -->
+  <div class="container">
+    <div class="d-flex justify-content-center gap-2 mt-4">
+      @for (s of servicios; track s.titulo; let i = $index) {
+        <button class="servicio-dot"
+                [class.servicio-dot--active]="i === servicioIndex()"
+                (click)="servicioGoTo(i)"
+                [attr.aria-label]="'Ir a ' + s.titulo">
+        </button>
+      }
+    </div>
+  </div>
+
+</section>
+
+<!-- NOSOTROS -->
+<section id="nosotros" class="py-5">
+  <div class="container">
+    <div class="row align-items-start g-5">
+
+      <!-- Columna izquierda: texto -->
+      <div class="col-md-6">
+        <span class="badge text-uppercase mb-3"
+          style="background:#E6F1FB; color:#0C447C; font-weight:500; letter-spacing:.05em;">
+          Universidad Privada del Norte
+        </span>
+        <h2 class="fw-bold mb-3">¿Quiénes somos?</h2>
+        <p class="text-muted">
+          La Clínica UPN es un centro de salud universitario comprometido con brindar atención
+          médica de calidad a toda la comunidad académica. Contamos con profesionales especializados
+          y tecnología moderna para garantizar tu bienestar.
+        </p>
+
+        <ul class="list-unstyled mt-4 d-flex flex-column gap-3">
+          @for (f of features; track f.title) {
+            <li class="d-flex align-items-center gap-3 bg-light rounded-3 p-3">
+              <div class="rounded-2 p-2 flex-shrink-0" [style.background]="f.bg">
+                <i class="bi {{ f.icon }}" [style.color]="f.color" style="font-size:1.1rem;"></i>
+              </div>
+              <div>
+                <strong class="d-block" style="font-size:.9rem;">{{ f.title }}</strong>
+                <span class="text-muted" style="font-size:.8rem;">{{ f.desc }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Columna derecha -->
+      <div class="col-md-6 d-flex flex-column gap-3">
+
+        <!-- Card identidad -->
+        <div class="card border shadow-sm">
+          <div class="card-body d-flex align-items-center gap-3 p-3">
+            <div class="rounded-3 p-2 flex-shrink-0 d-flex align-items-center justify-content-center"
+                 style="background:#f0f4ff; width:56px; height:56px;">
+              <img [src]="logoUpn" alt="Logo UPN" style="height:36px; width:auto; object-fit:contain;" />
+            </div>
+            <div>
+              <strong>Clínica UPN</strong>
+              <p class="text-muted mb-0" style="font-size:.85rem;">Salud universitaria de calidad</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spline 3D -->
+        <div class="rounded-3 overflow-hidden" style="height:420px; background:#000;">
+          <spline-viewer
+            url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+            style="width:100%; height:100%;">
+          </spline-viewer>
+        </div>
+
+        <!-- Stats grid: 4 tarjetas en 2x2 -->
+        <div class="row g-3">
+          @for (s of stats; track s.label) {
+            <div class="col-6">
+              <div class="bg-light rounded-3 p-3 text-center">
+                <p class="mb-1 fw-bold fs-3" [style.color]="s.color">{{ s.value }}</p>
+                <small class="text-muted">{{ s.label }}</small>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+<!-- ESPECIALIDADES CIRCULAR -->
+<!-- ESPECIALIDADES -->
+<section id="especialidades" class="py-5 esp-section">
+  <div class="container">
+
+    <h2 class="text-center fw-bold mb-2">Atención especializada</h2>
+    <p class="text-center text-muted mb-5">
+      Conoce a los profesionales de la Clínica UPN
+    </p>
+
+    <div class="circular-wrapper">
+
+      <!-- Imágenes -->
+      <div class="circular-images">
+        @for (e of especialidades; track e.nombre; let i = $index) {
+          <div class="circ-img-wrap" [class]="getCardClass(i)" (click)="servicioGoTo(i)">
+            <img [src]="e.foto" [alt]="e.nombre" class="circ-img" />
+            <!-- Badge nombre sobre imagen en mobile -->
+            <div class="circ-img-badge">{{ e.nombre }}</div>
+          </div>
+        }
+      </div>
+
+      <!-- Contenido activo -->
+      <div class="circular-content">
+
+        <!-- Avatar grande -->
+        <div class="circ-avatar-wrap mb-3">
+          <img
+            [src]="especialidades[activeIndex()].foto"
+            [alt]="especialidades[activeIndex()].nombre"
+            class="circ-avatar"
+          />
+          <div class="circ-avatar-ring"></div>
+        </div>
+
+        <h3 class="fw-bold mb-1">{{ especialidades[activeIndex()].nombre }}</h3>
+        <p class="fw-semibold mb-3" style="font-size:14px; color:#185FA5;">
+          {{ especialidades[activeIndex()].cargo }}
+        </p>
+        <p class="circ-quote">{{ especialidades[activeIndex()].testimonio }}</p>
+
+        <!-- Dots -->
+        <div class="circ-dots mt-3">
+          @for (e of especialidades; track e.nombre; let i = $index) {
+            <span
+              class="circ-dot"
+              [class.active]="i === activeIndex()"
+              (click)="servicioGoTo(i)">
+            </span>
+          }
+        </div>
+
+        <!-- Flechas -->
+        <div class="circ-arrows mt-3">
+          <button class="circ-btn" (click)="goPrev()">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <button class="circ-btn" (click)="goNext()">
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-2">Contáctanos</h2>
+    <p class="text-center text-muted mb-5">Estamos aquí para ayudarte</p>
+
+    <div class="contact-card position-relative">
+      <!-- Esquinas + -->
+      <span class="corner top-left">+</span>
+      <span class="corner top-right">+</span>
+      <span class="corner bottom-left">+</span>
+      <span class="corner bottom-right">+</span>
+
+      <div class="row g-0 h-100">
+        <!-- IZQUIERDA -->
+        <div class="col-lg-8 p-4 p-md-5">
+          <h3 class="fw-bold mb-3" style="font-size: clamp(1.5rem, 3vw, 2.5rem)">
+            Ponte en contacto
+          </h3>
+          <p class="text-muted mb-4" style="max-width: 520px">
+            Si tienes preguntas sobre nuestros servicios o necesitas ayuda, completa el formulario.
+            Respondemos dentro de 1 día hábil.
+          </p>
+
+          <div class="row g-3">
+            <div class="col-sm-4">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">Email</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">clinica&#64;upn.edu.pe</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">Teléfono</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">(01) 123-4567</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">Horario</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">Lun - Vie: 8am - 6pm</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">Dirección</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">
+                    Av. Universitaria s/n, Lima, Perú
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DERECHA formulario -->
+        <div class="col-lg-4 contact-form-side p-4 p-md-5">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nombre</label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Tu nombre completo"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Email</label>
+            <input
+              type="email"
+              class="form-control form-control-sm"
+              placeholder="correo@ejemplo.com"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Teléfono</label>
+            <input type="tel" class="form-control form-control-sm" placeholder="(01) 000-0000" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Mensaje</label>
+            <textarea
+              class="form-control form-control-sm"
+              rows="3"
+              placeholder="¿En qué podemos ayudarte?"
+            ></textarea>
+          </div>
+          <button class="btn btn-primary w-100 btn-sm">Enviar mensaje</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-5" style="background:#0a0a0a;">
+  <div class="container">
+
+    <!-- Fila principal -->
+    <div class="row g-5 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+
+      <!-- Marca -->
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="rounded-3 p-2 d-flex align-items-center justify-content-center"
+               style="background:#f0f4ff; width:44px; height:44px;">
+            <img [src]="logoUpn" alt="Logo UPN" style="height:28px; width:auto; object-fit:contain;" />
+          </div>
+          <div>
+            <p class="fw-bold mb-0 text-white" style="font-size:1rem;">Clínica UPN</p>
+            <p class="mb-0" style="font-size:10px; letter-spacing:2px; color:rgba(255,255,255,0.4);">
+              SALUD UNIVERSITARIA
+            </p>
+          </div>
+        </div>
+        <p style="font-size:.85rem; color:rgba(255,255,255,0.45); line-height:1.7; max-width:280px;">
+          Centro de salud universitario comprometido con brindar atención médica de calidad
+          a toda la comunidad UPN.
+        </p>
+        <!-- Redes -->
+        <div class="d-flex gap-3 mt-3">
+          <a href="#" class="footer-social" title="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="#" class="footer-social" title="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="#" class="footer-social" title="LinkedIn">
+            <i class="bi bi-linkedin"></i>
+          </a>
+          <a href="mailto:clinica@upn.edu.pe" class="footer-social" title="Email">
+            <i class="bi bi-envelope-fill"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Links: Servicios -->
+      <div class="col-6 col-md-2">
+        <h6 class="text-uppercase fw-semibold mb-3"
+            style="font-size:.7rem; letter-spacing:.1em; color:rgba(255,255,255,0.35);">
+          Servicios
+        </h6>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          @for (s of servicios; track s.titulo) {
+            <li>
+              <a href="#servicios"
+                 style="font-size:.85rem; color:rgba(255,255,255,0.5); text-decoration:none;"
+                 class="footer-link">
+                {{ s.titulo }}
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Links: Navegación -->
+      <div class="col-6 col-md-2">
+        <h6 class="text-uppercase fw-semibold mb-3"
+            style="font-size:.7rem; letter-spacing:.1em; color:rgba(255,255,255,0.35);">
+          Navegación
+        </h6>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          <li><a href="#inicio"       class="footer-link">Inicio</a></li>
+          <li><a href="#servicios"    class="footer-link">Servicios</a></li>
+          <li><a href="#nosotros"     class="footer-link">Nosotros</a></li>
+          <li><a href="#especialidades" class="footer-link">Especialidades</a></li>
+          <li><a href="#contacto"     class="footer-link">Contacto</a></li>
+        </ul>
+      </div>
+
+      <!-- Contacto -->
+      <div class="col-md-4">
+        <h6 class="text-uppercase fw-semibold mb-3"
+            style="font-size:.7rem; letter-spacing:.1em; color:rgba(255,255,255,0.35);">
+          Contacto
+        </h6>
+        <ul class="list-unstyled d-flex flex-column gap-3">
+          <li class="d-flex align-items-start gap-3">
+            <i class="bi bi-geo-alt-fill mt-1 flex-shrink-0" style="color:#185FA5;"></i>
+            <span style="font-size:.85rem; color:rgba(255,255,255,0.5);">
+              Av. Universitaria s/n, Lima, Perú
+            </span>
+          </li>
+          <li class="d-flex align-items-center gap-3">
+            <i class="bi bi-telephone-fill flex-shrink-0" style="color:#185FA5;"></i>
+            <span style="font-size:.85rem; color:rgba(255,255,255,0.5);">(01) 123-4567</span>
+          </li>
+          <li class="d-flex align-items-center gap-3">
+            <i class="bi bi-envelope-fill flex-shrink-0" style="color:#185FA5;"></i>
+            <span style="font-size:.85rem; color:rgba(255,255,255,0.5);">clinica&#64;upn.edu.pe</span>
+          </li>
+          <li class="d-flex align-items-center gap-3">
+            <i class="bi bi-clock-fill flex-shrink-0" style="color:#185FA5;"></i>
+            <span style="font-size:.85rem; color:rgba(255,255,255,0.5);">Lun - Vie: 8:00am – 6:00pm</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Barra inferior -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4 gap-3">
+      <small style="color:rgba(255,255,255,0.3);">
+        © {{ currentYear }} Clínica UPN — Universidad Privada del Norte. Todos los derechos reservados.
+      </small>
+      <div class="d-flex gap-4">
+        <a href="#" style="font-size:.8rem; color:rgba(255,255,255,0.3); text-decoration:none;"
+           class="footer-link">Política de privacidad</a>
+        <a href="#" style="font-size:.8rem; color:rgba(255,255,255,0.3); text-decoration:none;"
+           class="footer-link">Términos de uso</a>
+      </div>
+    </div>
+
+  </div>
+</footer>

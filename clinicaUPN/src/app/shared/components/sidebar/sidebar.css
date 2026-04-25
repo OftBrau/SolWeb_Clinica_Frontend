@@ -1,0 +1,8 @@
+.nav-link {
+  color: #444;
+  transition: background 0.2s;
+}
+.nav-link:hover:not(.active) {
+  background: #f0f4ff;
+  color: #0d6efd;
+}

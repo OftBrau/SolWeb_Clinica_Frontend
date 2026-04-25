@@ -8,7 +8,7 @@ import { AuthService } from '../../../../core/services/auth';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login-page.html',
-  styleUrl: './login-page.css'
+  styleUrl: './login-page.css',
 })
 export class LoginPageComponent {
   private authService = inject(AuthService);
@@ -23,15 +23,17 @@ export class LoginPageComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.authService.login({
-      username: this.username(),
-      password: this.password()
-    }).subscribe({
-      next: () => this.router.navigate(['/pacientes']),
-      error: () => {
-        this.error.set('Usuario o contraseña incorrectos');
-        this.loading.set(false);
-      }
-    });
+    this.authService
+      .login({
+        username: this.username(),
+        password: this.password(),
+      })
+      .subscribe({
+        next: () => this.router.navigate(['/app/pacientes']), 
+        error: () => {
+          this.error.set('Usuario o contraseña incorrectos');
+          this.loading.set(false);
+        },
+      });
   }
 }

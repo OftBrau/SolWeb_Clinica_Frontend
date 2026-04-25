@@ -8,11 +8,10 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  // Signal del usuario logueado
   currentUser = signal<any>(null);
   isAuthenticated = signal<boolean>(!!localStorage.getItem('token'));
 
-  private apiUrl = 'http://localhost:8080/api/auth'; // URL DEL SPRINTBOOT
+  private apiUrl = 'http://localhost:8080/api/auth';
 
   login(credentials: { username: string; password: string }) {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials).pipe(
