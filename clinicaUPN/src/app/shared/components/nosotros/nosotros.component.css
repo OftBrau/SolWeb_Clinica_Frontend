@@ -1,0 +1,21 @@
+#nosotros .badge {
+  font-size: 0.7rem;
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+
+#nosotros ul li {
+  transition: box-shadow 0.2s ease;
+}
+
+#nosotros ul li:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#nosotros .card {
+  border-radius: 12px !important;
+}
+
+#nosotros .rounded-3 {
+  border-radius: 12px !important;
+}
