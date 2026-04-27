@@ -25,10 +25,19 @@
     <a href="#contacto"       class="pill-item"><i class="bi bi-envelope-fill"></i><span class="pill-label">Contacto</span></a>
   </div>
 
-  <!-- CTA -->
+<!-- CTA -->
+<ng-container *ngIf="tieneToken; else sinSesion">
+  <button class="btn-ingresar" (click)="irAlSistema()">
+    <i class="bi bi-grid-fill"></i>
+    <span>Ir al sistema</span>
+  </button>
+</ng-container>
+
+<ng-template #sinSesion>
   <a routerLink="/login" class="btn-ingresar">
     <i class="bi bi-box-arrow-in-right"></i>
     <span>Ingresar</span>
   </a>
+</ng-template>
 
 </nav>

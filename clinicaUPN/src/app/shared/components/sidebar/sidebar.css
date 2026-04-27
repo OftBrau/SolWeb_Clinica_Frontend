@@ -1,8 +1,147 @@
-.nav-link {
-  color: #444;
-  transition: background 0.2s;
+/* ============================================================
+   sidebar.css
+   Sidebar de navegación — Clínica UPN
+   ============================================================ */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  min-width: 220px;
+  height: 100vh;
+  background: #fff;
+  border-right: 1.5px solid #e8ecf4;
+  padding: 0;
+  position: relative;
 }
-.nav-link:hover:not(.active) {
-  background: #f0f4ff;
-  color: #0d6efd;
+
+/* ---- Brand ---- */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 16px 18px;
+  border-bottom: 1.5px solid #e8ecf4;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: #1d4ed8;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Nav ---- */
+.sidebar-nav {
+  padding: 16px 10px 0;
+  flex: 1;
+}
+
+.nav-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  padding: 0 8px;
+  margin: 0 0 8px;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.nav-link.active {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.nav-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+/* ---- Spacer ---- */
+.sidebar-spacer {
+  flex: 1;
+}
+
+/* ---- Footer ---- */
+.sidebar-footer {
+  padding: 12px 10px 16px;
+  border-top: 1.5px solid #e8ecf4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-home {
+  color: #475569;
+}
+.btn-home:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.btn-logout {
+  color: #dc2626;
+}
+.btn-logout:hover {
+  background: #fef2f2;
+  color: #b91c1c;
 }

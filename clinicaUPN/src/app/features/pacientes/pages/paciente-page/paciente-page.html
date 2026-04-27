@@ -1,1 +1,9 @@
-<p>paciente-page works!</p>
+<div class="page-container">
+
+  <app-lista></app-lista>
+
+  @if (panelAbierto()) {
+    <app-detalle></app-detalle>
+  }
+
+</div>
