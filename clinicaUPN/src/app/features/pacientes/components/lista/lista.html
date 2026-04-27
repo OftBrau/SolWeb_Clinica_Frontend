@@ -1,1 +1,151 @@
-<p>lista works!</p>
+<div class="lista-container">
+
+  <!-- Header -->
+  <div class="lista-header">
+    <div class="header-left">
+      <h2>Pacientes</h2>
+      <span class="total-badge">{{ totalTexto() }}</span>
+    </div>
+    <div class="header-actions">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+          <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar paciente..."
+          [value]="searchTerm()"
+          (input)="onSearchInput($event)"
+        />
+      </div>
+      <button class="btn-primary" (click)="onNuevoPaciente()">
+        <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+          <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Nuevo paciente
+      </button>
+    </div>
+  </div>
+
+  <!-- Cargando -->
+  @if (cargando()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <span>Cargando pacientes...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMsg() && !cargando()) {
+    <div class="error-state">
+      <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p>{{ errorMsg() }}</p>
+      <button class="btn-outline" (click)="cargarPacientes()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla -->
+  @if (!cargando() && !errorMsg()) {
+    <div class="table-wrapper">
+      <table class="pacientes-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Código</th>
+            <th>Teléfono</th>
+            <th>Fecha Nac.</th>
+            <th>Sangre</th>
+            <th>Estado</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pacientes(); track p.idPaciente) {
+            <tr class="table-row" (click)="onVerDetalle(p)">
+              <td class="paciente-cell">
+                <div class="avatar">{{ getInitials(p) }}</div>
+                <div class="paciente-info">
+                  <span class="paciente-nombre">{{ p.nombre }} {{ p.apellido }}</span>
+                  <span class="paciente-email">{{ p.email }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="codigo-badge">{{ p.codigoEstudiante || '—' }}</span>
+              </td>
+              <td>{{ p.telefono || '—' }}</td>
+              <td>{{ p.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
+              <td>
+                @if (p.tipoSangre) {
+                  <span class="sangre-badge">{{ p.tipoSangre }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                <span class="estado-badge" [class]="'estado-' + (p.estado || 'activo').toLowerCase()">
+                  {{ p.estado || 'Activo' }}
+                </span>
+              </td>
+              <td class="td-actions" (click)="$event.stopPropagation()">
+                <div class="actions-group">
+                  <button class="btn-icon btn-edit" title="Editar" (click)="onEditar(p)">
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+                      <path d="M14.5 3.5l2 2L7 15H5v-2L14.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <button class="btn-icon btn-delete" title="Desactivar" (click)="onDesactivar(p)">
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+                      <path d="M4 7h12M6 7V5a2 2 0 012-2h4a2 2 0 012 2v2M9 11v4M11 11v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (pacientes().length === 0) {
+            <tr>
+              <td colspan="7" class="empty-state">
+                <div class="empty-inner">
+                  <svg viewBox="0 0 48 48" fill="none" width="48" height="48">
+                    <circle cx="24" cy="18" r="8" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M8 40c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <p>No se encontraron pacientes</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    @if (totalPaginas() > 1) {
+      <div class="pagination">
+        <button class="btn-page" [disabled]="paginaActual() === 0" (click)="onPrevPage()">
+          <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+            <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        @for (page of getPages(); track page) {
+          <button
+            class="btn-page"
+            [class.active]="page === paginaActual()"
+            (click)="onGoToPage(page)"
+          >{{ page + 1 }}</button>
+        }
+        <button class="btn-page" [disabled]="paginaActual() >= totalPaginas() - 1" (click)="onNextPage()">
+          <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+            <path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="pagination-info">Página {{ paginaActual() + 1 }} de {{ totalPaginas() }}</span>
+      </div>
+    }
+  }
+</div>
