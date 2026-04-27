@@ -1,10 +1,8 @@
-<!-- login-page.html -->
 <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
   <div class="card shadow p-4" style="width: 380px">
 
     <h4 class="text-center mb-4 fw-bold text-primary">Clínica UPN</h4>
 
-    <!-- Email (antes era username) -->
     <div class="mb-3">
       <label class="form-label">Correo electrónico</label>
       <input
@@ -16,7 +14,6 @@
       />
     </div>
 
-    <!-- Contraseña -->
     <div class="mb-3">
       <label class="form-label">Contraseña</label>
       <input
@@ -28,12 +25,10 @@
       />
     </div>
 
-    <!-- Error -->
     @if (error()) {
-      <div class="alert alert-danger py-2">{{ error() }}</div>
+      <div class="alert alert-danger py-2 small text-center">{{ error() }}</div>
     }
 
-    <!-- Botón -->
     <button
       class="btn btn-primary w-100 mt-2"
       (click)="onLogin()"
@@ -41,6 +36,12 @@
     >
       {{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}
     </button>
+
+    <div class="text-center mt-3">
+      <a routerLink="/" class="text-decoration-none small text-muted">
+        <i class="bi bi-arrow-left"></i> Volver al inicio
+      </a>
+    </div>
 
   </div>
 </div>

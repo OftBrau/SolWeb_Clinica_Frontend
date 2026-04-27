@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth';
 
 // ============================================================
@@ -10,18 +10,18 @@ import { AuthService } from '../../../../core/services/auth';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
 export class LoginPageComponent {
   private authService = inject(AuthService);
-  private router      = inject(Router);
+  private router = inject(Router);
 
-  email    = signal('');
+  email = signal('');
   password = signal('');
-  error    = signal('');
-  loading  = signal(false);
+  error = signal('');
+  loading = signal(false);
 
   onLogin() {
     if (!this.email() || !this.password()) {
@@ -34,7 +34,7 @@ export class LoginPageComponent {
 
     this.authService
       .login({
-        email:    this.email(),
+        email: this.email(),
         password: this.password(),
       })
       .subscribe({
@@ -64,7 +64,7 @@ export class LoginPageComponent {
           this.error.set(
             err.status === 401
               ? 'Usuario o contraseña incorrectos'
-              : 'Error del servidor, intenta más tarde'
+              : 'Error del servidor, intenta más tarde',
           );
           this.loading.set(false);
         },
