@@ -1,0 +1,21 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-greeting">Bienvenido(a),</span>
+    <span class="topbar-username">{{ nombreUsuario }}</span>
+  </div>
+
+  <div class="topbar-right">
+    <app-notificacion-bell />
+
+    <div class="topbar-user" *ngIf="usuarioCargado">
+      <div class="topbar-avatar">{{ iniciales }}</div>
+      <div class="topbar-user-info">
+        <span class="topbar-user-name">{{ nombreUsuario }}</span>
+        <span class="topbar-user-role">{{ rolUsuarioLabel }}</span>
+      </div>
+      <button class="topbar-logout" (click)="cerrarSesion()" title="Cerrar sesión">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</header>

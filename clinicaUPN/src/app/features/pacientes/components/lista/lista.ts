@@ -5,7 +5,7 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 import {
   pacientes, cargando, errorMsg,
   paginaActual, totalPaginas, totalElementos,
-  abrirPanelNuevo, abrirPanelVer, abrirPanelEditar
+  abrirPanelNuevo, abrirPanelVer, abrirPanelEditar, abrirCrearCita
 } from '../../signals/pacientes.signals';
 import { PacienteDTO, PacienteService } from '../../services/paciente';
 
@@ -71,6 +71,7 @@ export class ListaComponent implements OnInit {
   onVerDetalle(p: PacienteDTO): void  { abrirPanelVer(p); }
   onEditar(p: PacienteDTO): void      { abrirPanelEditar(p); }
   onNuevoPaciente(): void             { abrirPanelNuevo(); }
+  onCrearCita(): void                 { abrirCrearCita(null); }
 
   onDesactivar(p: PacienteDTO): void {
     if (!p.idPaciente) return;

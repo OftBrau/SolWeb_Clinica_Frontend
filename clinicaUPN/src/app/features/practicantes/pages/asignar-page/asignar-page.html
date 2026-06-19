@@ -1,0 +1,89 @@
+<app-page-header title="Asignar Practicantes" subtitle="Administra qué practicantes están asignados a cada doctor"></app-page-header>
+
+@if (successMsg()) {
+  <div class="success">{{ successMsg() }}</div>
+}
+@if (error()) {
+  <div class="error">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="loading">Cargando...</div>
+}
+
+@if (!loading() && doctores().length) {
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Especialidad</th>
+          <th>Practicantes asignados</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (doctor of doctores(); track doctor.idDoctor) {
+          <tr>
+            <td class="td-doctor">{{ doctor.nombre }} {{ doctor.apellido }}</td>
+            <td><span class="esp-badge">{{ doctor.especialidad }}</span></td>
+            <td>
+              @if (doctor.practicantes.length) {
+                <div class="prac-list">
+                  @for (p of doctor.practicantes; track p.idPracticante) {
+                    <div class="prac-chip">
+                      <span>{{ p.nombreUsuario }} {{ p.apellidoUsuario }}</span>
+                      <button class="btn-chip-remove" (click)="confirmarEliminar(p)" title="Quitar practicante">&times;</button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <span class="text-muted">Sin practicantes asignados</span>
+              }
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary" (click)="abrirAsignar(doctor)">+ Asignar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (!loading() && !doctores().length && !error()) {
+  <div class="empty">No hay doctores registrados.</div>
+}
+
+<!-- Modal Asignar Practicante -->
+@if (modalVisible()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Asignar practicante</h2>
+        <p class="modal-subtitle">Doctor: {{ doctorSeleccionado()?.nombre }} {{ doctorSeleccionado()?.apellido }}</p>
+      </div>
+
+      @if (disponibles().length) {
+        <div class="form-group">
+          <label>Practicante *</label>
+          <select class="form-input" [(ngModel)]="practicanteSeleccionado">
+            <option value="0" disabled>Seleccionar practicante</option>
+            @for (p of disponibles(); track p.idPracticante) {
+              <option [value]="p.idPracticante">{{ p.nombre }} {{ p.apellido }} ({{ p.email }})</option>
+            }
+          </select>
+        </div>
+      } @else {
+        <p class="text-muted">No hay practicantes disponibles para asignar.</p>
+      }
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-save" (click)="confirmarAsignar()" [disabled]="!practicanteSeleccionado()">
+          Asignar
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -59,4 +59,8 @@ export class HceService {
       responseType: 'blob'
     });
   }
+
+  enviarPorEmail(id: number): Observable<void> {
+    return this.http.post<void>(`${this.API}/documentos/${id}/enviar`, {});
+  }
 }

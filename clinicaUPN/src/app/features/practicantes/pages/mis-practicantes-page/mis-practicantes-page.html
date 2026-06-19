@@ -1,0 +1,157 @@
+<app-page-header title="Mis Practicantes" subtitle="Gestiona los practicantes asignados a tu supervisión"></app-page-header>
+
+@if (successMsg()) {
+  <div class="success">{{ successMsg() }}</div>
+}
+@if (error()) {
+  <div class="error">{{ error() }}</div>
+}
+
+<div class="tabs">
+  <button class="tab" [class.active]="activeTab() === 'practicantes'" (click)="activeTab.set('practicantes')">Practicantes</button>
+  <button class="tab" [class.active]="activeTab() === 'actividades'" (click)="activeTab.set('actividades')">Actividades</button>
+  <button class="tab" [class.active]="activeTab() === 'evaluaciones'" (click)="activeTab.set('evaluaciones')">Evaluaciones</button>
+</div>
+
+@if (loading()) {
+  <div class="loading">Cargando...</div>
+}
+
+<!-- Tab: Practicantes -->
+@if (!loading() && activeTab() === 'practicantes') {
+  @if (practicantes().length) {
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Practicante</th>
+            <th>Email</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of practicantes(); track p.idAsignacion) {
+            <tr>
+              <td class="td-name">{{ p.nombreUsuario }} {{ p.apellidoUsuario }}</td>
+              <td>{{ p.emailUsuario }}</td>
+              <td class="td-actions">
+                <button class="btn btn-sm btn-primary" (click)="abrirActividad(p)">+ Asignar tarea</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="abrirEvaluacion(p)">Evaluar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty">No tienes practicantes asignados.</div>
+  }
+}
+
+<!-- Tab: Actividades -->
+@if (!loading() && activeTab() === 'actividades') {
+  @if (actividades().length) {
+    <div class="card-list">
+      @for (a of actividades(); track a.idActividad) {
+        <div class="card-item">
+          <div class="card-header">
+            <span class="card-titulo">{{ a.titulo }}</span>
+            <span class="badge" [class.badge-pendiente]="a.estado === 'PENDIENTE'" [class.badge-completado]="a.estado === 'COMPLETADO'">{{ a.estado }}</span>
+          </div>
+          @if (a.descripcion) { <p class="card-desc">{{ a.descripcion }}</p> }
+          <div class="card-meta">
+            <span>Tipo: {{ a.tipo }}</span>
+            @if (a.fecha) { <span>Fecha: {{ a.fecha }}</span> }
+            @if (a.paciente) { <span>Paciente: {{ a.paciente }}</span> }
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty">No has creado actividades aún.</div>
+  }
+}
+
+<!-- Tab: Evaluaciones -->
+@if (!loading() && activeTab() === 'evaluaciones') {
+  @if (evaluaciones().length) {
+    <div class="card-list">
+      @for (e of evaluaciones(); track e.idEvaluacion) {
+        <div class="card-item">
+          <div class="card-header">
+            <span class="card-titulo">Puntuación: {{ e.puntuacion }}/10</span>
+            <span class="card-fecha">{{ e.fecha }}</span>
+          </div>
+          @if (e.comentario) { <p class="card-desc">{{ e.comentario }}</p> }
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty">No has registrado evaluaciones aún.</div>
+  }
+}
+
+<!-- Modal: Asignar tarea -->
+@if (modalActividadVisible()) {
+  <div class="modal-overlay" (click)="cerrarModalActividad()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Asignar tarea</h2>
+      </div>
+      <div class="form-group">
+        <label>Título *</label>
+        <input type="text" class="form-input" [(ngModel)]="formActividad().titulo" placeholder="Ej: Revisar historia del paciente" />
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="formActividad().descripcion" placeholder="Detalles de la tarea..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tipo *</label>
+        <select class="form-input" [(ngModel)]="formActividad().tipo">
+          <option value="CONSULTA">Consulta</option>
+          <option value="EVALUACION">Evaluación</option>
+          <option value="REVISION">Revisión</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="date" class="form-input" [(ngModel)]="formActividad().fecha" />
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <input type="time" class="form-input" [(ngModel)]="formActividad().hora" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cerrarModalActividad()">Cancelar</button>
+        <button class="btn-save" (click)="guardarActividad()" [disabled]="!formActividad().titulo || !formActividad().tipo">Guardar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Evaluar -->
+@if (modalEvalVisible()) {
+  <div class="modal-overlay" (click)="cerrarModalEval()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Evaluar practicante</h2>
+      </div>
+      <div class="form-group">
+        <label>Puntuación (0-10) *</label>
+        <input type="number" class="form-input" min="0" max="10" step="0.5" [(ngModel)]="formEval().puntuacion" />
+      </div>
+      <div class="form-group">
+        <label>Comentario</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="formEval().comentario" placeholder="Observaciones..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cerrarModalEval()">Cancelar</button>
+        <button class="btn-save" (click)="guardarEvaluacion()" [disabled]="!formEval().puntuacion">Guardar</button>
+      </div>
+    </div>
+  </div>
+}

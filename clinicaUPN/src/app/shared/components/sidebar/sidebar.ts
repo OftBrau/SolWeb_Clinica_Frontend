@@ -135,9 +135,14 @@ export class SidebarComponent {
     return this.esAdmin || this.esDirector;
   }
 
-  /** Practicantes: admin, doctor, director */
+  /** Asignación de practicantes: admin y director */
   get verPracticantes(): boolean {
-    return this.esAdmin || this.esDoctor || this.esDirector;
+    return this.esAdmin || this.esDirector;
+  }
+
+  /** Mis practicantes asignados: solo doctor */
+  get verMisPracticantes(): boolean {
+    return this.esDoctor;
   }
 
   /** Evaluaciones de Practicantes: admin, doctor, director */

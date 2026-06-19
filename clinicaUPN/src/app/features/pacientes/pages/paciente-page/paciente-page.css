@@ -1,5 +1,49 @@
 .page-container {
-  padding: 24px 28px;
-  max-width: 1200px;
+  padding: 0;
   min-height: 100%;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.cita-modal {
+  background: var(--bg-card);
+  border-radius: 12px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.cita-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.cita-modal-body {
+  padding: 20px;
+}
+
+.cita-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1.5px solid var(--border-color);
+}
+
+.slot-btn {
+  min-width: 60px;
 }

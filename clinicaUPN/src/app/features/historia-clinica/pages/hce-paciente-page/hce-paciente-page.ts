@@ -16,6 +16,7 @@ export class HcePacientePageComponent implements OnInit {
   documentos = signal<DocumentoHCE[]>([]);
   cargando = signal(true);
   error = signal('');
+  enviando = signal<number | null>(null);
 
   ngOnInit() {
     this.cargar();
@@ -27,6 +28,34 @@ export class HcePacientePageComponent implements OnInit {
     this.hceService.listarDocumentos().subscribe({
       next: (data) => { this.documentos.set(data); this.cargando.set(false); },
       error: () => { this.error.set('No se pudieron cargar los documentos.'); this.cargando.set(false); }
+    });
+  }
+
+  descargar(doc: DocumentoHCE) {
+    if (!doc.idConsulta) return;
+    const win = window.open('', '_blank');
+    if (!win) { this.error.set('Permite ventanas emergentes para ver el PDF.'); return; }
+    win.document.write('Cargando PDF...');
+    this.hceService.descargar(doc.idConsulta).subscribe({
+      next: blob => {
+        win.location.replace(URL.createObjectURL(blob));
+      },
+      error: () => { win.close(); this.error.set('Error al descargar el PDF.'); }
+    });
+  }
+
+  enviarPorCorreo(doc: DocumentoHCE) {
+    if (!doc.idConsulta) return;
+    this.enviando.set(doc.idConsulta);
+    this.error.set('');
+    this.hceService.enviarPorEmail(doc.idConsulta).subscribe({
+      next: () => {
+        this.enviando.set(null);
+      },
+      error: () => {
+        this.enviando.set(null);
+        this.error.set('Error al enviar el correo. Intenta de nuevo.');
+      }
     });
   }
 

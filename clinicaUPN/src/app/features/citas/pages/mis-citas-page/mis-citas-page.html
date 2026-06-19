@@ -1,6 +1,9 @@
 <div class="mis-citas-container">
 
   <app-page-header title="Mis citas" subtitle="Gestiona tus citas médicas programadas">
+    <button class="btn btn-primary btn-sm" (click)="irACrearCita()">
+      <i class="bi bi-calendar-plus me-1"></i>Nueva cita
+    </button>
     <button class="btn btn-outline-primary btn-sm" (click)="cargarCitas()">
       <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
     </button>
@@ -37,7 +40,7 @@
         <div class="empty-state">
           <i class="bi bi-calendar-plus fs-1 text-muted"></i>
           <p class="text-muted mb-0">No tienes citas programadas</p>
-          <small class="text-muted">Agenda una cita desde la página principal</small>
+          <small class="text-muted">Usa el botón "Nueva cita" para agendar una</small>
         </div>
       }
 

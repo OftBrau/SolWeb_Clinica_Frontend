@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { CitaService, CitaDTO } from '../../services/cita';
 import * as citasState from '../../signals/citas.state';
@@ -14,6 +15,7 @@ import * as citasState from '../../signals/citas.state';
 })
 export class MisCitasPageComponent implements OnInit {
   private citaService = inject(CitaService);
+  private router = inject(Router);
 
   readonly misCitas = citasState.misCitas;
   readonly cargando = citasState.cargando;
@@ -36,6 +38,10 @@ export class MisCitasPageComponent implements OnInit {
 
   ngOnInit() {
     this.cargarCitas();
+  }
+
+  irACrearCita() {
+    this.router.navigate(['/']);
   }
 
   cargarCitas() {

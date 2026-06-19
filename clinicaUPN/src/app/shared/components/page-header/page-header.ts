@@ -45,13 +45,13 @@ import { Component, Input } from '@angular/core';
       font-size: 22px;
       font-weight: 600;
       line-height: 1.3;
-      color: #111827;
+      color: var(--text-primary);
     }
 
     .page-header-subtitle {
       margin: 4px 0 0;
       font-size: 14px;
-      color: #6b7280;
+      color: var(--text-secondary);
       line-height: 1.4;
     }
 

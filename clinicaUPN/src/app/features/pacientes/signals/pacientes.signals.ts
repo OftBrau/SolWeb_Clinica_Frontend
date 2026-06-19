@@ -61,3 +61,16 @@ export function cerrarPanel(): void {
   panelAbierto.set(false);
   pacienteSeleccionado.set(null);
 }
+
+export const crearCitaAbierto = signal<boolean>(false);
+export const crearCitaPaciente = signal<PacienteDTO | null>(null);
+
+export function abrirCrearCita(p: PacienteDTO | null): void {
+  crearCitaPaciente.set(p);
+  crearCitaAbierto.set(true);
+}
+
+export function cerrarCrearCita(): void {
+  crearCitaAbierto.set(false);
+  crearCitaPaciente.set(null);
+}

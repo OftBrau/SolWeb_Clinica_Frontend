@@ -178,14 +178,25 @@
         </a>
       </li>
 
-      <!-- Practicantes — admin, doctor, director -->
+      <!-- Practicantes — admin, director -->
       <li *ngIf="verPracticantes">
-        <a class="nav-link" routerLink="/app/practicantes" routerLinkActive="active">
+        <a class="nav-link" routerLink="/app/practicantes/asignar" routerLinkActive="active">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
             <path d="M12 3L2 8l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
             <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Practicantes</span>
+        </a>
+      </li>
+
+      <!-- Mis Practicantes — solo doctor -->
+      <li *ngIf="verMisPracticantes">
+        <a class="nav-link" routerLink="/app/practicantes/mis-practicantes" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L2 8l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Mis Practicantes</span>
         </a>
       </li>
 

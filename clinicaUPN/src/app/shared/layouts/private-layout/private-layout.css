@@ -1,6 +1,8 @@
-.noti-top-bar {
-  position: fixed;
-  top: 12px;
-  right: 20px;
-  z-index: 1040;
+.content-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  margin-left: 220px;
+  background: var(--bg-body);
 }

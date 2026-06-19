@@ -13,7 +13,10 @@
   }
 
   @if (error() && !cargando()) {
-    <div class="alert alert-danger">{{ error() }}</div>
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ error() }}</span>
+    </div>
   }
 
   @if (!cargando() && !error()) {
@@ -55,6 +58,21 @@
               }
             </div>
           </div>
+          @if (doc.idConsulta) {
+            <div class="doc-actions">
+              <button class="btn-action btn-pdf" (click)="descargar(doc)" title="Descargar PDF">
+                <i class="bi bi-filetype-pdf"></i>
+              </button>
+              <button class="btn-action btn-email" (click)="enviarPorCorreo(doc)"
+                      [disabled]="enviando() === doc.idConsulta" title="Enviar por correo">
+                @if (enviando() === doc.idConsulta) {
+                  <span class="spinner-border spinner-border-sm"></span>
+                } @else {
+                  <i class="bi bi-envelope-at-fill"></i>
+                }
+              </button>
+            </div>
+          }
         </div>
       }
     </div>
