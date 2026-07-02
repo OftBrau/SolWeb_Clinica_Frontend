@@ -48,6 +48,43 @@
         </a>
       </li>
 
+      <!-- Mi Horario — solo doctor -->
+      <li *ngIf="verMiHorario">
+        <a class="nav-link" routerLink="/app/mi-horario" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9 16l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Mi horario</span>
+        </a>
+      </li>
+
+      <!-- Mi Agenda — solo doctor -->
+      <li *ngIf="verMiAgendaDoctor">
+        <a class="nav-link" routerLink="/app/mi-agenda" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Mi agenda</span>
+        </a>
+      </li>
+
+      <!-- Buscar Doctores — solo paciente -->
+      <li *ngIf="verBuscarDoctores">
+        <a class="nav-link" routerLink="/app/doctors" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M5.5 21c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M15 11h4M17 9v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Buscar doctores</span>
+        </a>
+      </li>
+
       <!-- Mis Citas — solo paciente -->
       <li *ngIf="verMisCitas">
         <a class="nav-link" routerLink="/app/mis-citas" routerLinkActive="active">

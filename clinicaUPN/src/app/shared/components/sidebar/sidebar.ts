@@ -80,12 +80,27 @@ export class SidebarComponent {
     return this.esAdmin || this.esDoctor || this.esAdministrativo || this.esDirector;
   }
 
+  /** Mi Horario: solo doctor */
+  get verMiHorario(): boolean {
+    return this.esDoctor;
+  }
+
+  /** Mi Agenda: doctor o practicante */
+  get verMiAgendaDoctor(): boolean {
+    return this.esDoctor;
+  }
+
+  /** Buscar Doctores: solo paciente */
+  get verBuscarDoctores(): boolean {
+    return this.esPaciente;
+  }
+
   /** Mis Citas: solo paciente */
   get verMisCitas(): boolean {
     return this.esPaciente;
   }
 
-  /** Citas: todos excepto director */
+  /** Citas: todos excepto director y paciente */
   get verCitas(): boolean {
     return !this.esDirector && !this.esPaciente;
   }
