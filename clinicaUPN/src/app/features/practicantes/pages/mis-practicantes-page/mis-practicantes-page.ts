@@ -78,6 +78,13 @@ export class MisPracticantesPageComponent implements OnInit {
       .subscribe(r => this.citasDelDia.set(r.data || []));
   }
 
+  cargarCitas() {
+    const f = this.formActividad().fecha;
+    if (!f) return;
+    this.http.get<{data: any[]}>(`http://localhost:8080/api/consultas/agenda?fecha=${f}`)
+      .subscribe(r => this.citasDelDia.set(r.data || []));
+  }
+
   cerrarModalActividad(): void {
     this.modalActividadVisible.set(false);
   }

@@ -1,2 +1,72 @@
-<app-page-header title="Reportes" subtitle="Reportes y estadísticas"></app-page-header>
+<div class="max-w">
+  <app-page-header title="Reportes" subtitle="Reportes y estadísticas operativas">
+    <div class="d-flex gap-2 align-items-center">
+      <input type="date" class="form-control form-control-sm" style="width:160px" [ngModel]="fecha()" (ngModelChange)="fecha.set($event); cargar()">
+      <button class="btn btn-sm btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+  </app-page-header>
 
+  @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
+
+  @if (data(); as d) {
+    @if (d.resumen) {
+      <h6 class="mb-3">Resumen del día</h6>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value text-primary">{{ d.resumen.totalCitas || 0 }}</div><div class="stat-label">Total Citas</div></div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value" style="color:#198754">{{ d.resumen.confirmadas || 0 }}</div><div class="stat-label">Confirmadas</div></div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value" style="color:#0d6efd">{{ d.resumen.atendidas || 0 }}</div><div class="stat-label">Atendidas</div></div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value text-danger">{{ d.resumen.canceladas || 0 }}</div><div class="stat-label">Canceladas</div></div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value text-warning">{{ d.resumen.noAsistieron || 0 }}</div><div class="stat-label">No Asistieron</div></div>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card"><div class="stat-value" style="color:#6f42c1">{{ d.resumen.pacientesAtendidos || 0 }}</div><div class="stat-label">Pacientes</div></div>
+        </div>
+      </div>
+    }
+
+    @if (d.porEspecialidad?.length) {
+      <h6>Citas por especialidad</h6>
+      <div class="mb-4">
+        @for (e of d.porEspecialidad; track e.especialidad; let i = $index) {
+          <div class="bar-chart">
+            <div class="bar-label small">{{ e.especialidad }}</div>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width]="(e.cantidad / maxCant(d.porEspecialidad) * 100) + '%'" [style.background]="barColor(i)">{{ e.cantidad }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (d.porDoctor?.length) {
+      <h6>Citas por doctor</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead><tr><th>Doctor</th><th>Especialidad</th><th class="text-end">Citas</th></tr></thead>
+          <tbody>
+            @for (doc of d.porDoctor; track doc.nombreDoctor) {
+              <tr>
+                <td>{{ doc.nombreDoctor }}</td>
+                <td><span class="badge bg-light text-dark">{{ doc.especialidad }}</span></td>
+                <td class="text-end fw-bold">{{ doc.cantidad }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  @if (!data() && !cargando()) {
+    <p class="text-muted text-center py-5">Seleccioná una fecha para ver el reporte.</p>
+  }
+</div>

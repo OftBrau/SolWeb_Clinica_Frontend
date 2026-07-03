@@ -71,7 +71,7 @@ export class SidebarComponent {
   }
 
   get verFarmaciaAdmin(): boolean {
-    return this.esAdmin || this.esAdministrativo;
+    return this.esAdministrativo;
   }
 
   get verPerfilProfesional(): boolean {
@@ -212,7 +212,7 @@ export class SidebarComponent {
       ADMINISTRADOR:  '/',
       DIRECTOR:       '/',
       DOCTOR:         '/',
-      PRACTICANTE:    '/app/practicantes/agenda',
+      PRACTICANTE:    '/',
       PACIENTE:       '/',
       ADMINISTRATIVO: '/',
     };
