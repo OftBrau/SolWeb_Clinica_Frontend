@@ -46,8 +46,16 @@
               @if (doctorEditando()?.idDoctor !== doctor.idDoctor) {
                 <button class="btn btn-sm btn-outline-primary" (click)="editarEspecialidad(doctor)">Cambiar especialidad</button>
                 <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(doctor)">Editar</button>
+                <button class="btn btn-sm"
+                        [class.btn-warning]="doctor.destacado"
+                        [class.btn-outline-secondary]="!doctor.destacado"
+                        (click)="toggleDestacado(doctor)">
+                  <i class="bi" [class.bi-star-fill]="doctor.destacado" [class.bi-star]="!doctor.destacado"></i>
+                </button>
                 @if (doctor.estado === 'ACTIVO') {
                   <button class="btn btn-sm btn-outline-danger" (click)="confirmarEliminar(doctor)">Desactivar</button>
+                } @else if (doctor.estado === 'INACTIVO') {
+                  <button class="btn btn-sm btn-outline-success" (click)="activarDoctor(doctor)">Activar</button>
                 }
               } @else {
                 <button class="btn btn-sm btn-success" (click)="guardarEspecialidad()">Guardar</button>

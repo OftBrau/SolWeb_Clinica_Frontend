@@ -27,6 +27,7 @@ export class NotificacionBellComponent {
     this.abierto = !this.abierto;
     if (this.abierto) {
       this.notiSvc.marcarLeidas();
+      this.notiSvc.activarNotificacionesSO();
     }
   }
 
@@ -34,8 +35,14 @@ export class NotificacionBellComponent {
     this.abierto = false;
   }
 
-  ir(teleconsultaId: number) {
+  ir(tipo: string, teleconsultaId: number) {
     this.cerrar();
-    this.router.navigate(['/app/teleconsulta']);
+    if (tipo === 'CITA_ATENDIDA' || tipo === 'CONSULTA_ACTUALIZADA') {
+      this.router.navigate(['/app/mi-historia']);
+    } else if (tipo === 'INVITACION_PRACTICA' || tipo === 'INVITACION_ACEPTADA' || tipo === 'INVITACION_RECHAZADA') {
+      this.router.navigate(['/app/invitaciones']);
+    } else {
+      this.router.navigate(['/app/teleconsulta']);
+    }
   }
 }

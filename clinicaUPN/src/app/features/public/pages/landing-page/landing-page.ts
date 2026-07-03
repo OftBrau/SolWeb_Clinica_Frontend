@@ -1,21 +1,17 @@
-import {
-  Component,
-  signal,
-  computed,
-  OnInit,
-  OnDestroy,
-  CUSTOM_ELEMENTS_SCHEMA,
-  inject,
-} from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { CitaPublicaService, DoctorDisponible } from '../../services/cita-publica';
 import { LanguageService, Lang } from '../../../../core/services/language.service';
+import { AuthService } from '../../../../core/services/auth';
 import { PUBLIC_TRANSLATIONS } from '../../../../shared/utils/public-translations';
 
 @Component({
   selector: 'app-landing-page', 
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
@@ -23,6 +19,8 @@ import { PUBLIC_TRANSLATIONS } from '../../../../shared/utils/public-translation
 export class LandingPageComponent implements OnInit, OnDestroy {
   private citaService = inject(CitaPublicaService);
   private languageService = inject(LanguageService);
+  private auth = inject(AuthService);
+  private http = inject(HttpClient);
 
   videoMuted = signal(true);
 
@@ -125,32 +123,59 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   doctoresReales = signal<DoctorDisponible[]>([]);
   cargandoDoctores = signal(false);
 
+  productosDestacados = signal<any[]>([]);
+
   // doctoresDisponibles ahora usa los datos reales del backend
   doctoresDisponibles = computed(() => this.doctoresReales());
 
   slotsDisponibles = [
-    '08:00',
-    '08:30',
-    '09:00',
-    '09:30',
-    '10:00',
-    '10:30',
-    '11:00',
-    '11:30',
-    '12:00',
-    '12:30',
-    '14:00',
-    '14:30',
-    '15:00',
-    '15:30',
-    '16:00',
-    '16:30',
+    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+    '11:00', '11:30', '12:00', '12:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
   ];
+  slotsOcupados = signal<Set<string>>(new Set());
+  cargandoSlots = signal(false);
+
+  get esAutoAsignar(): boolean { return !this.formMedico() || this.formMedico() === 'AUTO'; }
+
+  onMedicoChange(medico: string) {
+    this.formMedico.set(medico);
+    this.formHora.set('');
+    if (this.formFecha() && !this.esAutoAsignar) this.cargarSlots();
+  }
+
+  onFechaChange(fecha: string) {
+    this.formFecha.set(fecha);
+    this.formHora.set('');
+    if (!this.esAutoAsignar) this.cargarSlots();
+  }
+
+  cargarSlots() {
+    const fecha = this.formFecha();
+    const medico = this.formMedico();
+    if (!fecha) { this.slotsOcupados.set(new Set()); return; }
+
+    const doctor = this.doctoresReales().find(d => d.nombre === medico);
+    if (!doctor) { this.slotsOcupados.set(new Set()); return; }
+
+    this.cargandoSlots.set(true);
+    this.http.get<{data: {startTime: string}[]}>(`http://localhost:8080/api/doctors/${doctor.idDoctor}/available-slots?date=${fecha}`)
+      .subscribe({
+        next: r => {
+          const available = new Set(r.data.map(s => s.startTime));
+          const ocupados = new Set(this.slotsDisponibles.filter(s => !available.has(s)));
+          this.slotsOcupados.set(ocupados);
+          this.cargandoSlots.set(false);
+        },
+        error: () => { this.cargandoSlots.set(false); this.slotsOcupados.set(new Set()); }
+      });
+  }
 
   // ── Llamado al backend al cambiar especialidad ──
   cargarDoctores(especialidad: string) {
     this.formMedico.set('');
     this.doctoresReales.set([]);
+    this.slotsOcupados.set(new Set());
     if (!especialidad) return;
 
     this.cargandoDoctores.set(true);
@@ -223,7 +248,12 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   agendarCita() {
-    if (!this.formEspecialidad() || !this.formMedico() || !this.formFecha() || !this.formHora()) {
+    let medico = this.formMedico();
+    if (this.esAutoAsignar) {
+      const docs = this.doctoresReales();
+      medico = docs.length > 0 ? docs[0].nombre : '';
+    }
+    if (!this.formEspecialidad() || !medico || !this.formFecha() || !this.formHora()) {
       this.formError.set(this.t('agenda.completeAppt'));
       return;
     }
@@ -240,7 +270,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         fechaNacimiento: this.formFechaNacimiento(),
         genero: this.formGenero(),
         especialidad: this.formEspecialidad(),
-        medico: this.formMedico(),
+        medico: medico,
         fecha: this.formFecha(),
         hora: this.formHora(),
         motivo: 'Consulta general',
@@ -290,8 +320,30 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     import('@splinetool/viewer');
     this.cargarEspecialidades();
+    this.cargarProductos();
     this.interval = setInterval(() => this.goNext(), 5000);
     this.startServicioInterval();
+    this.autoFillIfLoggedIn();
+  }
+
+  private autoFillIfLoggedIn() {
+    if (!this.auth.isAuthenticated()) return;
+    const rol = this.auth.getRol();
+    if (rol !== 'PACIENTE' && rol !== 'PATIENT') return;
+    const user = this.auth.getUser();
+    if (!user?.email || !user?.nombre) return;
+    // nombre viene como "Nombre Apellido" desde el backend
+    const partes = user.nombre.split(' ');
+    this.formNombre.set(partes[0] || '');
+    this.formApellido.set(partes.slice(1).join(' ') || '');
+    this.formEmail.set(user.email);
+    this.paso.set('cita');
+  }
+
+  cargarProductos(): void {
+    this.http.get<{ message: string; data: any[] }>('http://localhost:8080/api/farmacia/medicamentos/activos')
+      .pipe(map(r => r.data.slice(0, 6)))
+      .subscribe({ next: (p) => this.productosDestacados.set(p) });
   }
 
   cargarEspecialidades(): void {

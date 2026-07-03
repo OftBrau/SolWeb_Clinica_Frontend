@@ -1,0 +1,84 @@
+<div class="page-wrapper">
+  <h2>Libro de Reclamaciones - Administración</h2>
+
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border"></div></div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr><th>#</th><th>Cliente</th><th>Tipo</th><th>Producto/Servicio</th><th>Descripción</th><th>Estado</th><th>Fecha</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (r of reclamaciones(); track r.idReclamacion) {
+            <tr>
+              <td>{{ r.idReclamacion }}</td>
+              <td>{{ r.nombreCompleto }}<br><small>{{ r.email }}</small></td>
+              <td>{{ r.tipo }}</td>
+              <td>{{ r.productoServicio || '-' }}</td>
+              <td class="text-truncate" style="max-width:200px">{{ r.descripcion }}</td>
+              <td><span class="badge" [class]="estadoBadge(r.estado)">{{ r.estado }}</span></td>
+              <td class="small">{{ r.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+              <td><button class="btn btn-sm btn-outline-primary" (click)="verDetalle(r)">Ver</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <small>{{ total() }} reclamaciones</small>
+      <div>
+        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="pagina() === 0" (click)="cargar(pagina() - 1)">Anterior</button>
+        <span class="mx-2">{{ pagina() + 1 }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="pagina() >= totalPaginas() - 1" (click)="cargar(pagina() + 1)">Siguiente</button>
+      </div>
+    </div>
+  }
+
+  @if (selected()) {
+    <div class="modal-backdrop show"></div>
+    <div class="modal d-block" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Reclamo #{{ selected()!.idReclamacion }}</h5>
+            <button class="btn-close" (click)="cerrarDetalle()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6"><strong>Cliente:</strong> {{ selected()!.nombreCompleto }}</div>
+              <div class="col-md-3"><strong>Email:</strong> {{ selected()!.email || '-' }}</div>
+              <div class="col-md-3"><strong>Tel:</strong> {{ selected()!.telefono || '-' }}</div>
+            </div>
+            <p><strong>Tipo:</strong> {{ selected()!.tipo }} | <strong>Producto:</strong> {{ selected()!.productoServicio || '-' }}</p>
+            <p><strong>Descripción:</strong></p>
+            <div class="bg-light p-3 rounded mb-3">{{ selected()!.descripcion }}</div>
+
+            <h6>Responder</h6>
+            <div class="mb-2">
+              <label class="form-label">Estado</label>
+              <select class="form-select" [(ngModel)]="respuestaForm.estado">
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="EN_PROCESO">En Proceso</option>
+                <option value="RESUELTO">Resuelto</option>
+                <option value="CERRADO">Cerrado</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Respuesta</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="respuestaForm.respuesta"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="cerrarDetalle()">Cancelar</button>
+            <button class="btn btn-primary" (click)="responder()" [disabled]="guardando()">
+              @if (guardando()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+              Guardar respuesta
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

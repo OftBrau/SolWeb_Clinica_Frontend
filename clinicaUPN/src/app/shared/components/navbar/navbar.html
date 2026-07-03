@@ -34,9 +34,11 @@
     <a href="#nosotros"       class="pill-item"><i class="bi bi-building-fill"></i><span class="pill-label">{{ langText('nosotros') }}</span></a>
     <a href="#especialidades" class="pill-item"><i class="bi bi-person-badge-fill"></i><span class="pill-label">{{ langText('especialidades') }}</span></a>
     <a href="#contacto"       class="pill-item"><i class="bi bi-envelope-fill"></i><span class="pill-label">{{ langText('contacto') }}</span></a>
+    <a routerLink="/farmacia" class="pill-item pill-pharmacy"><i class="bi bi-capsule"></i><span class="pill-label">Farmacia</span></a>
   </div>
 
   <!-- CTA -->
+  <app-cart-drawer />
   <ng-container *ngIf="tieneToken; else sinSesion">
     <button class="btn-ingresar" (click)="irAlSistema()">
       <i class="bi bi-grid-fill"></i>

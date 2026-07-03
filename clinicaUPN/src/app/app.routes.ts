@@ -23,6 +23,21 @@ export const routes: Routes = [
         path: '',
         loadComponent: () => import('./features/public/pages/landing-page/landing-page')
           .then(m => m.LandingPageComponent)
+      },
+      {
+        path: 'farmacia',
+        loadComponent: () => import('./features/farmacia/pages/productos-page/productos-page')
+          .then(m => m.ProductosPageComponent)
+      },
+      {
+        path: 'farmacia/reclamaciones',
+        loadComponent: () => import('./features/farmacia/pages/reclamaciones-page/reclamaciones-page')
+          .then(m => m.ReclamacionesPageComponent)
+      },
+      {
+        path: 'checkout',
+        loadComponent: () => import('./features/farmacia/pages/checkout-page/checkout-page')
+          .then(m => m.CheckoutPageComponent)
       }
     ]
   },
@@ -59,6 +74,11 @@ export const routes: Routes = [
       { path: 'citas',            loadChildren: () => import('./features/citas/citas.routes').then(m => m.CITAS_ROUTES) },
       { path: 'historia-clinica', loadChildren: () => import('./features/historia-clinica/historia-clinica.routes').then(m => m.HCE_ROUTES) },
       { path: 'teleconsulta',     loadChildren: () => import('./features/teleconsulta/teleconsulta.routes').then(m => m.TELECONSULTA_ROUTES) },
+      { path: 'farmacia',         loadChildren: () => import('./features/farmacia/farmacia.routes').then(m => m.FARMACIA_ROUTES) },
+      { path: 'perfil-profesional', loadChildren: () => import('./features/perfil-profesional/perfil-profesional.routes').then(m => m.PERFIL_ROUTES) },
+      { path: 'invitaciones', loadComponent: () => import('./features/invitaciones/invitaciones-page').then(m => m.InvitacionesPageComponent) },
+      { path: 'mis-tareas', loadComponent: () => import('./features/tareas/tareas-page').then(m => m.TareasPageComponent) },
+      { path: 'reporte-rafa', loadComponent: () => import('./features/tareas/rafa-page').then(m => m.RafaPageComponent) },
       { path: 'reportes',         loadChildren: () => import('./features/reportes/reportes.routes').then(m => m.REPORTES_ROUTES) },
       { path: 'practicantes',     loadChildren: () => import('./features/practicantes/practicantes.routes').then(m => m.PRACTICANTES_ROUTES) },
       { path: 'mis-citas',        loadComponent: () => import('./features/patient/pages/my-appointments-page/my-appointments-page').then(m => m.MyAppointmentsPageComponent) },

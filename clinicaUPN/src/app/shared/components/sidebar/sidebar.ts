@@ -66,6 +66,34 @@ export class SidebarComponent {
   get esPaciente(): boolean       { return this.rolUsuario === 'PACIENTE'; }
   get esAdministrativo(): boolean { return this.rolUsuario === 'ADMINISTRATIVO'; }
 
+  get verFarmacia(): boolean {
+    return this.esPaciente || this.esAdmin || this.esAdministrativo;
+  }
+
+  get verFarmaciaAdmin(): boolean {
+    return this.esAdmin || this.esAdministrativo;
+  }
+
+  get verPerfilProfesional(): boolean {
+    return this.esPracticante || this.esDirector;
+  }
+
+  get verPracticantesDisponibles(): boolean {
+    return this.esDoctor || this.esAdmin || this.esDirector;
+  }
+
+  get verInvitaciones(): boolean {
+    return this.esPracticante || this.esDoctor;
+  }
+
+  get verMisTareas(): boolean {
+    return this.esPracticante;
+  }
+
+  get verRafa(): boolean {
+    return this.esPracticante;
+  }
+
   // ──────────────────────────────────────────
   // Visibilidad de ítems del menú
   // ──────────────────────────────────────────
@@ -100,9 +128,9 @@ export class SidebarComponent {
     return this.esPaciente;
   }
 
-  /** Citas: todos excepto director y paciente */
+  /** Citas: admin, doctor, administrativo */
   get verCitas(): boolean {
-    return !this.esDirector && !this.esPaciente;
+    return this.esAdmin || this.esDoctor || this.esAdministrativo;
   }
 
   /** Mi Perfil: solo paciente */
@@ -117,7 +145,7 @@ export class SidebarComponent {
 
   /** Mi Agenda: solo practicante */
   get verMiAgenda(): boolean {
-    return this.esPracticante;
+    return false; // oculto para practicante — ahora usa Mis Tareas
   }
 
   /** Registrar Consulta: solo practicante */
@@ -130,14 +158,14 @@ export class SidebarComponent {
     return this.esPracticante;
   }
 
-  /** Historia Clínica: admin, doctor, practicante */
+  /** Historia Clínica: admin, doctor */
   get verHistoriaClinica(): boolean {
-    return (this.esAdmin || this.esDoctor || this.esPracticante) && !this.esPaciente;
+    return this.esAdmin || this.esDoctor;
   }
 
-  /** Teleconsulta: admin, doctor, paciente, practicante */
+  /** Teleconsulta: admin, doctor, paciente */
   get verTeleconsulta(): boolean {
-    return this.esAdmin || this.esDoctor || this.esPaciente || this.esPracticante;
+    return this.esAdmin || this.esDoctor || this.esPaciente;
   }
 
   /** Consultorios: admin, administrativo */

@@ -1,7 +1,9 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { HceService, DocumentoHCE } from '../../services/hce';
+import { NotificacionService } from '../../../teleconsulta/services/notificacion.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-hce-paciente-page',
@@ -10,16 +12,26 @@ import { HceService, DocumentoHCE } from '../../services/hce';
   templateUrl: './hce-paciente-page.html',
   styleUrl: './hce-paciente-page.css',
 })
-export class HcePacientePageComponent implements OnInit {
+export class HcePacientePageComponent implements OnInit, OnDestroy {
   private hceService = inject(HceService);
+  private notiSvc = inject(NotificacionService);
 
   documentos = signal<DocumentoHCE[]>([]);
   cargando = signal(true);
   error = signal('');
   enviando = signal<number | null>(null);
+  private sub: Subscription | null = null;
 
   ngOnInit() {
     this.cargar();
+    // Auto-refresh cuando llega una notificación de consulta atendida
+    this.sub = this.notiSvc.onNotificacion$.subscribe(() => {
+      this.cargar();
+    });
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   cargar() {

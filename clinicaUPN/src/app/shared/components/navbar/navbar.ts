@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth';
 import { LanguageService } from '../../../core/services/language.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { CartDrawerComponent } from '../cart-drawer/cart-drawer';
 
 type Lang = 'es' | 'en';
 
@@ -24,7 +25,7 @@ const TRADUCCIONES: Translations = {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, CartDrawerComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })

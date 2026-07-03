@@ -44,7 +44,7 @@
             <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <span>Pacientes</span>
+          <span>{{ esDoctor ? 'Mis Pacientes' : 'Pacientes' }}</span>
         </a>
       </li>
 
@@ -131,14 +131,14 @@
         </a>
       </li>
 
-      <!-- Registrar Consulta — solo practicante -->
+      <!-- Registrar Actividad — solo practicante -->
       <li *ngIf="verRegistrarConsulta">
         <a class="nav-link" routerLink="/app/practicantes/registrar-consulta" routerLinkActive="active">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
             <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <span>Registrar consulta</span>
+          <span>Registrar Actividad</span>
         </a>
       </li>
 
@@ -188,6 +188,87 @@
             <path d="M12 8v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           <span>Teleconsulta</span>
+        </a>
+      </li>
+
+      <!-- Farmacia — paciente, admin, administrativo -->
+      <li *ngIf="verFarmacia">
+        <a class="nav-link" routerLink="/app/farmacia" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 7h6M9 11h6M12 15v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="7" r="1" fill="currentColor"/>
+          </svg>
+          <span>Farmacia</span>
+        </a>
+      </li>
+
+      <!-- Farmacia Admin — admin, administrativo -->
+      <li *ngIf="verFarmaciaAdmin">
+        <a class="nav-link" routerLink="/app/farmacia/admin" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Gestionar Productos</span>
+        </a>
+      </li>
+
+      <!-- Perfil Profesional — practicante -->
+      <li *ngIf="verPerfilProfesional">
+        <a class="nav-link" routerLink="/app/perfil-profesional" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="17" cy="17" r="3" fill="white" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M16 17l.5.5 1.5-1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Mi Perfil Profesional</span>
+        </a>
+      </li>
+
+      <!-- Practicantes — doctor, admin, director -->
+      <li *ngIf="verPracticantesDisponibles">
+        <a class="nav-link" routerLink="/app/perfil-profesional/practicantes" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L2 8l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Ver Practicantes</span>
+        </a>
+      </li>
+
+      <!-- Invitaciones — practicante, doctor -->
+      <li *ngIf="verInvitaciones">
+        <a class="nav-link" routerLink="/app/invitaciones" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.5"/>
+            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span>Invitaciones</span>
+        </a>
+      </li>
+
+      <!-- Mis Tareas — practicante, doctor -->
+      <li *ngIf="verMisTareas">
+        <a class="nav-link" routerLink="/app/mis-tareas" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Mis Tareas</span>
+        </a>
+      </li>
+
+      <!-- Reporte RAFA — practicante -->
+      <li *ngIf="verRafa">
+        <a class="nav-link" routerLink="/app/reporte-rafa" routerLinkActive="active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M17 18l-2-2m0 0l2-2m-2 2h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Reporte RAFA</span>
         </a>
       </li>
 

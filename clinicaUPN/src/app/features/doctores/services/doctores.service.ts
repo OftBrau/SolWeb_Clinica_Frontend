@@ -18,6 +18,7 @@ export interface Doctor {
   cmp: string;
   fotoUrl?: string;
   estado: string;
+  destacado?: boolean;
 }
 
 export interface CrearDoctorData {
@@ -63,6 +64,14 @@ export class DoctoresService {
 
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
+  }
+
+  activar(id: number): Observable<void> {
+    return this.http.put<void>(`${this.API}/${id}/activar`, {});
+  }
+
+  toggleDestacado(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.API}/${id}/destacar`, {});
   }
 
   listarEspecialidades(): Observable<EspecialidadDTO[]> {

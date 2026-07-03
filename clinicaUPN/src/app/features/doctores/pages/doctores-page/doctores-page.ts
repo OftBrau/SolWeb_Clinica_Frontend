@@ -179,6 +179,19 @@ export class DoctoresPageComponent implements OnInit {
     });
   }
 
+  activarDoctor(doctor: Doctor): void {
+    this.doctoresService.activar(doctor.idDoctor).subscribe({
+      next: () => this.cargarDoctores(),
+      error: (err) => this.error.set(err.error?.message || 'Error al activar doctor')
+    });
+  }
+
+  toggleDestacado(doctor: Doctor): void {
+    this.doctoresService.toggleDestacado(doctor.idDoctor).subscribe({
+      next: () => this.cargarDoctores()
+    });
+  }
+
   editarEspecialidad(doctor: Doctor): void {
     this.doctorEditando.set(doctor);
     this.especialidadEditando.set(doctor.especialidad);

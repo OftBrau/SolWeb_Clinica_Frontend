@@ -1,0 +1,174 @@
+<div class="lista-container">
+  <app-page-header title="Gestión de Productos" subtitle="Administrar catálogo de farmacia">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" width="16" height="16">
+        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="text" class="search-input" placeholder="Buscar producto..."
+             [value]="searchTerm()" (input)="onSearchInput($event)">
+    </div>
+    <button class="btn-primary" (click)="nuevo()">
+      <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+        <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Nuevo producto
+    </button>
+  </app-page-header>
+
+  @if (cargando()) {
+    <div class="loading-state"><div class="spinner"></div><span>Cargando productos...</span></div>
+  }
+  @if (errorMsg() && !cargando()) {
+    <div class="error-state"><p>{{ errorMsg() }}</p><button class="btn-outline" (click)="cargar()">Reintentar</button></div>
+  }
+
+  @if (!cargando() && !errorMsg()) {
+    <div class="table-wrapper">
+      <table class="productos-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>Receta</th>
+            <th>Activo</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of productosFiltrados; track p.idMedicamento) {
+            <tr class="table-row" (click)="editar(p)">
+              <td class="producto-cell">
+                @if (p.fotoUrl) {
+                  <img [src]="p.fotoUrl" class="producto-foto" alt="">
+                } @else {
+                  <div class="producto-foto-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M9 7h6M9 11h6M12 15v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </div>
+                }
+                <div class="producto-info">
+                  <span class="producto-nombre">{{ p.nombreComercial }}</span>
+                  <span class="producto-generico">{{ p.nombreGenerico || p.laboratorio || '—' }}</span>
+                </div>
+              </td>
+              <td><span class="cat-badge">{{ p.categoria }}</span></td>
+              <td><span [class.text-danger]="p.stock <= 3" [class.fw-bold]="p.stock <= 3">{{ p.stock }}</span></td>
+              <td>S/ {{ p.precioUnitario | number:'1.2-2' }}</td>
+              <td>{{ p.requiereReceta ? 'Sí' : 'No' }}</td>
+              <td><span class="estado-badge" [class]="p.activo ? 'estado-activo' : 'estado-inactivo'">{{ p.activo ? 'Activo' : 'Inactivo' }}</span></td>
+              <td class="td-actions" (click)="$event.stopPropagation()">
+                <div class="actions-group">
+                  <button class="btn-icon btn-edit" title="Editar" (click)="editar(p)">
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M14.5 3.5l2 2L7 15H5v-2L14.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="btn-icon btn-delete" title="Desactivar" (click)="desactivar(p)">
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M4 7h12M6 7V5a2 2 0 012-2h4a2 2 0 012 2v2M9 11v4M11 11v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (productosFiltrados.length === 0) {
+            <tr><td colspan="7" class="empty-state"><div class="empty-inner"><p>No se encontraron productos</p></div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="pagination">
+        <button class="btn-page" [disabled]="pagina() === 0" (click)="onPrevPage()">
+          <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        @for (page of getPages(); track page) {
+          <button class="btn-page" [class.active]="page === pagina()" (click)="onGoToPage(page)">{{ page + 1 }}</button>
+        }
+        <button class="btn-page" [disabled]="pagina() >= totalPaginas() - 1" (click)="onNextPage()">
+          <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="pagination-info">Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal Form -->
+@if (mostrarForm()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editando() ? 'Editar' : 'Nuevo' }} Producto</h5>
+          <button class="btn-close" (click)="cancelar()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre Comercial *</label>
+              <input class="form-control" [(ngModel)]="form.nombreComercial" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nombre Genérico</label>
+              <input class="form-control" [(ngModel)]="form.nombreGenerico">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="form.categoria">
+                @for (c of categorias; track c) { <option [value]="c">{{ c }}</option> }
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Stock</label>
+              <input type="number" class="form-control" [(ngModel)]="form.stock">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Precio S/</label>
+              <input type="number" step="0.01" class="form-control" [(ngModel)]="form.precioUnitario">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <div class="form-check mb-1">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="form.requiereReceta" id="receta">
+                <label class="form-check-label" for="receta">Receta</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Presentación</label>
+              <input class="form-control" [(ngModel)]="form.presentacion">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Concentración</label>
+              <input class="form-control" [(ngModel)]="form.concentracion">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Laboratorio</label>
+              <input class="form-control" [(ngModel)]="form.laboratorio">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Fecha Venc.</label>
+              <input type="date" class="form-control" [(ngModel)]="form.fechaVencimiento">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Foto</label>
+              <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+              @if (form.fotoUrl) { <img [src]="form.fotoUrl" class="foto-preview mt-1"> }
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="form.descripcion"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+          <button class="btn btn-primary" (click)="guardar()" [disabled]="guardando() || !form.nombreComercial || !form.precioUnitario">
+            @if (guardando()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

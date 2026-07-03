@@ -1,0 +1,90 @@
+<div class="page-wrapper">
+  <div class="mb-4">
+    <h2>Libro de Reclamaciones</h2>
+    <p class="text-muted">Conforme a lo establecido en el Código de Protección y Defensa del Consumidor (Ley N° 29571) e INDECOPI.</p>
+  </div>
+
+  @if (exito()) {
+    <div class="alert alert-success text-center py-4">
+      <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+      <h5 class="mt-2">Reclamo registrado</h5>
+      <p class="mb-0">Tu {{ form.tipo === 'QUEJA' ? 'queja' : 'reclamo' }} ha sido registrado. Te contactaremos pronto.</p>
+      <button class="btn btn-outline-primary btn-sm mt-3" (click)="otroReclamo()">Registrar otro</button>
+    </div>
+  } @else {
+    @if (autenticado && !mostrarForm()) {
+      <button class="btn btn-primary mb-3" (click)="mostrarForm.set(true)">Nuevo Reclamo</button>
+    }
+
+    @if (mostrarForm()) {
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Registrar {{ form.tipo === 'QUEJA' ? 'Queja' : 'Reclamo' }}</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre completo *</label>
+              <input class="form-control" [(ngModel)]="form.nombreCompleto" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Email</label>
+              <input class="form-control" [(ngModel)]="form.email" type="email">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Teléfono</label>
+              <input class="form-control" [(ngModel)]="form.telefono">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tipo *</label>
+              <select class="form-select" [(ngModel)]="form.tipo">
+                <option value="RECLAMO">Reclamo</option>
+                <option value="QUEJA">Queja</option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Producto / Servicio</label>
+              <input class="form-control" [(ngModel)]="form.productoServicio" placeholder="Ej: Paracetamol, consulta médica...">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripción *</label>
+              <textarea class="form-control" rows="4" [(ngModel)]="form.descripcion" placeholder="Describe tu reclamo o queja..."></textarea>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" (click)="enviar()" [disabled]="guardando() || !form.nombreCompleto || !form.descripcion">
+                @if (guardando()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                Enviar
+              </button>
+              @if (autenticado) {
+                <button class="btn btn-secondary ms-2" (click)="mostrarForm.set(false)">Cancelar</button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (autenticado) {
+      @if (cargando()) {
+        <div class="text-center py-5"><div class="spinner-border"></div></div>
+      } @else if (reclamaciones().length > 0) {
+        <h6 class="mt-4">Mis reclamaciones anteriores</h6>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>#</th><th>Tipo</th><th>Descripción</th><th>Estado</th><th>Respuesta</th><th>Fecha</th></tr></thead>
+            <tbody>
+              @for (r of reclamaciones(); track r.idReclamacion) {
+                <tr>
+                  <td>{{ r.idReclamacion }}</td>
+                  <td>{{ r.tipo }}</td>
+                  <td>{{ r.descripcion }}</td>
+                  <td><span class="badge" [class]="estadoBadge(r.estado)">{{ r.estado }}</span></td>
+                  <td class="small">{{ r.respuesta || '-' }}</td>
+                  <td class="small">{{ r.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</div>

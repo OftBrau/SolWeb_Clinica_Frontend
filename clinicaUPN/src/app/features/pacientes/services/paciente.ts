@@ -48,6 +48,11 @@ export class PacienteService {
       .pipe(map(res => res.data));
   }
 
+  listarMisPacientes(): Observable<PacienteDTO[]> {
+    return this.http.get<ApiResponse<PacienteDTO[]>>('http://localhost:8080/api/doctores/mis-pacientes')
+      .pipe(map(res => res.data));
+  }
+
   buscarPorId(id: number): Observable<PacienteDTO> {
     return this.http.get<ApiResponse<PacienteDTO>>(`${this.BASE_URL}/${id}`)
       .pipe(map(res => res.data));

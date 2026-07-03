@@ -978,3 +978,23 @@ section[id] {
   background: var(--bg-body);
   overflow: hidden;
 }
+
+/* ── PRODUCTOS DESTACADOS ───────────────────────── */
+.producto-mini {
+  transition: transform .15s, box-shadow .15s;
+}
+.producto-mini:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.1);
+}
+.producto-mini-img {
+  width: 100%; height: 120px; object-fit: cover; border-radius: 8px 8px 0 0;
+}
+.producto-mini-placeholder {
+  width: 100%; height: 120px; display: flex; align-items: center; justify-content: center;
+  background: var(--bs-tertiary-bg, #f0f0f0); border-radius: 8px 8px 0 0;
+  color: var(--bs-secondary-color, #999);
+}
+.producto-cat-badge {
+  background: var(--bs-tertiary-bg, #f0f0f0); font-size: 0.65rem;
+}

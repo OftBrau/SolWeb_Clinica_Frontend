@@ -5,12 +5,18 @@ export const misCitas = signal<CitaDTO[]>([]);
 export const cargando = signal(false);
 export const errorMsg = signal<string | null>(null);
 
+const hoy = () => new Date().toISOString().split('T')[0];
+
 export const citasPendientes = computed(() =>
-  misCitas().filter(c => c.estado === 'PENDIENTE' || c.estado === 'CONFIRMADA')
+  misCitas().filter(c =>
+    (c.estado === 'PENDIENTE' || c.estado === 'CONFIRMADA') && c.fecha >= hoy()
+  )
 );
 
-export const citasCompletadas = computed(() =>
-  misCitas().filter(c => c.estado === 'COMPLETADA' || c.estado === 'CANCELADA')
+export const citasPasadas = computed(() =>
+  misCitas().filter(c =>
+    c.fecha < hoy() || c.estado === 'COMPLETADA' || c.estado === 'CANCELADA' || c.estado === 'ATENDIDA'
+  )
 );
 
 export function cargarCitas(citas: CitaDTO[]) {
@@ -24,5 +30,11 @@ export function eliminarCita(id: number) {
 export function actualizarCita(actualizada: CitaDTO) {
   misCitas.update(lista =>
     lista.map(c => c.idCita === actualizada.idCita ? actualizada : c)
+  );
+}
+
+export function marcarCancelada(id: number) {
+  misCitas.update(lista =>
+    lista.map(c => c.idCita === id ? { ...c, estado: 'CANCELADA' } : c)
   );
 }

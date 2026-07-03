@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth';
 import { NotificacionBellComponent } from '../../../features/teleconsulta/components/notificacion-bell/notificacion-bell';
+import { CartDrawerComponent } from '../cart-drawer/cart-drawer';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule, NotificacionBellComponent],
+  imports: [CommonModule, NotificacionBellComponent, CartDrawerComponent],
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',
 })

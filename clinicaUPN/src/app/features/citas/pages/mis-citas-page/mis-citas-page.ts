@@ -21,7 +21,7 @@ export class MisCitasPageComponent implements OnInit {
   readonly cargando = citasState.cargando;
   readonly errorMsg = citasState.errorMsg;
   readonly citasPendientes = citasState.citasPendientes;
-  readonly citasCompletadas = citasState.citasCompletadas;
+  readonly citasPasadas = citasState.citasPasadas;
 
   readonly reprogId = signal<number | null>(null);
   readonly reprogFecha = signal('');
@@ -29,6 +29,7 @@ export class MisCitasPageComponent implements OnInit {
   readonly reprogLoading = signal(false);
   readonly reprogError = signal('');
   readonly cancelandoId = signal<number | null>(null);
+  readonly activeTab = signal<'proximas'|'pasadas'>('proximas');
 
   slotsDisponibles = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -36,13 +37,9 @@ export class MisCitasPageComponent implements OnInit {
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
   ];
 
-  ngOnInit() {
-    this.cargarCitas();
-  }
+  ngOnInit() { this.cargarCitas(); }
 
-  irACrearCita() {
-    this.router.navigate(['/']);
-  }
+  irACrearCita() { this.router.navigate(['/']); }
 
   cargarCitas() {
     citasState.cargando.set(true);
@@ -65,21 +62,12 @@ export class MisCitasPageComponent implements OnInit {
     this.reprogHora.set(cita.hora);
     this.reprogError.set('');
   }
-
   cerrarReprogramar() {
-    this.reprogId.set(null);
-    this.reprogFecha.set('');
-    this.reprogHora.set('');
-    this.reprogError.set('');
+    this.reprogId.set(null); this.reprogFecha.set(''); this.reprogHora.set(''); this.reprogError.set('');
   }
-
   confirmarReprogramar() {
-    if (!this.reprogFecha() || !this.reprogHora()) {
-      this.reprogError.set('Selecciona fecha y hora');
-      return;
-    }
-    this.reprogLoading.set(true);
-    this.reprogError.set('');
+    if (!this.reprogFecha() || !this.reprogHora()) { this.reprogError.set('Selecciona fecha y hora'); return; }
+    this.reprogLoading.set(true); this.reprogError.set('');
     this.citaService.reprogramar(this.reprogId()!, this.reprogFecha(), this.reprogHora()).subscribe({
       next: (actualizada) => {
         citasState.actualizarCita(actualizada);
@@ -94,25 +82,21 @@ export class MisCitasPageComponent implements OnInit {
   }
 
   cancelarCita(id: number) {
-    if (!confirm('¿Estás seguro de cancelar esta cita?')) return;
+    if (!confirm('¿Cancelar esta cita?')) return;
     this.cancelandoId.set(id);
     this.citaService.cancelar(id).subscribe({
       next: () => {
-        citasState.eliminarCita(id);
+        citasState.marcarCancelada(id);
         this.cancelandoId.set(null);
       },
-      error: () => {
-        alert('Error al cancelar la cita.');
-        this.cancelandoId.set(null);
-      }
+      error: () => { alert('Error al cancelar la cita.'); this.cancelandoId.set(null); }
     });
   }
 
   getEstadoClass(estado: string): string {
     const map: Record<string, string> = {
-      'PENDIENTE': 'badge-warning',
-      'CONFIRMADA': 'badge-primary',
-      'COMPLETADA': 'badge-success',
+      'PENDIENTE': 'badge-warning', 'CONFIRMADA': 'badge-primary',
+      'COMPLETADA': 'badge-success', 'ATENDIDA': 'badge-success',
       'CANCELADA': 'badge-danger',
     };
     return map[estado] || 'badge-secondary';

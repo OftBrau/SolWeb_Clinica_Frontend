@@ -152,6 +152,51 @@
   </div>
 </section>
 
+<!-- PRODUCTOS DESTACADOS -->
+@if (productosDestacados().length > 0) {
+<section id="productos-destacados" class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h2 class="fw-bold mb-1">Farmacia</h2>
+        <p class="text-muted mb-0">Productos destacados para tu bienestar</p>
+      </div>
+      <a routerLink="/farmacia" class="btn btn-outline-primary btn-sm">
+        Ver completo <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="row g-3">
+      @for (p of productosDestacados(); track p.idMedicamento) {
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card h-100 border shadow-sm producto-mini">
+            @if (p.fotoUrl) {
+              <img [src]="p.fotoUrl" [alt]="p.nombreComercial" class="producto-mini-img">
+            } @else {
+              <div class="producto-mini-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" width="28" height="28" stroke="currentColor" stroke-width="1.2">
+                  <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 7h6M9 11h6M12 15v5" stroke-linecap="round"/>
+                </svg>
+              </div>
+            }
+            <div class="card-body d-flex flex-column p-3">
+              <span class="badge text-primary mb-2 align-self-start producto-cat-badge">
+                {{ p.categoria === 'MEDICAMENTO' ? 'Medicamento' : p.categoria === 'VITAMINA' ? 'Vitamina' : p.categoria === 'SUPLEMENTO' ? 'Suplemento' : 'Otro' }}
+              </span>
+              <h6 class="fw-semibold mb-1" style="font-size:0.85rem">{{ p.nombreComercial }}</h6>
+              <small class="text-muted mb-2">{{ p.nombreGenerico || p.laboratorio }}</small>
+              <div class="mt-auto">
+                <span class="fw-bold d-block mb-2" style="font-size:1rem">S/ {{ p.precioUnitario }}</span>
+                <a routerLink="/farmacia" class="btn btn-sm btn-primary w-100">Agregar al carrito</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+}
+
 <!-- AGENDAR CITA -->
 <section id="agendar-cita" class="py-5 section-bg-card">
   <div class="container">
@@ -392,7 +437,7 @@
                   <select
                     class="form-select"
                     [ngModel]="formMedico()"
-                    (ngModelChange)="formMedico.set($event)"
+                    (ngModelChange)="onMedicoChange($event)"
                     [disabled]="doctoresDisponibles().length === 0"
                   >
                     <option value="">
@@ -400,6 +445,7 @@
                         formEspecialidad() ? t('agenda.doctorSelect') : t('agenda.doctorFirst')
                       }}
                     </option>
+                    <option value="AUTO">{{ doctoresDisponibles().length }} disponible(s) - Automático</option>
                     @for (d of doctoresDisponibles(); track d.idDoctor) {
                       <option [value]="d.nombre">{{ d.nombre }}</option>
                     }
@@ -419,7 +465,7 @@
                   type="date"
                   class="form-control"
                   [ngModel]="formFecha()"
-                  (ngModelChange)="formFecha.set($event)"
+                  (ngModelChange)="onFechaChange($event)"
                   [min]="today"
                 />
               </div>
@@ -429,15 +475,16 @@
                 <label class="form-label small fw-semibold">{{ t('agenda.schedule') }}</label>
                 <div class="d-flex flex-wrap gap-2">
                   @for (slot of slotsDisponibles; track slot) {
-                    <button
-                      type="button"
-                      class="btn btn-sm slot-btn"
-                      [class.btn-primary]="formHora() === slot"
-                      [class.btn-outline-secondary]="formHora() !== slot"
-                      (click)="formHora.set(slot)"
-                    >
-                      {{ slot }}
-                    </button>
+                    @if (slotsOcupados().has(slot)) {
+                      <button type="button" class="btn btn-sm btn-outline-secondary" disabled style="text-decoration:line-through;opacity:.5">{{ slot }}</button>
+                    } @else {
+                      <button type="button" class="btn btn-sm"
+                              [class.btn-primary]="formHora() === slot"
+                              [class.btn-outline-secondary]="formHora() !== slot"
+                              (click)="formHora.set(slot)">
+                        {{ slot }}
+                      </button>
+                    }
                   }
                 </div>
               </div>
@@ -807,6 +854,9 @@
           <li><a href="#nosotros" class="footer-link">{{ t('footer.nosotros') }}</a></li>
           <li><a href="#especialidades" class="footer-link">{{ t('footer.especialidades') }}</a></li>
           <li><a href="#contacto" class="footer-link">{{ t('footer.contacto') }}</a></li>
+          <li><a routerLink="/farmacia/reclamaciones" class="footer-link" style="font-weight:600;">
+            <i class="bi bi-journal-text me-1"></i>Libro de Reclamaciones
+          </a></li>
         </ul>
       </div>
 

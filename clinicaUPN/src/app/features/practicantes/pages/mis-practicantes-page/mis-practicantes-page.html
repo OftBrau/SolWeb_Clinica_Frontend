@@ -110,11 +110,29 @@
         <label>Tipo *</label>
         <select class="form-input" [(ngModel)]="formActividad().tipo">
           <option value="CONSULTA">Consulta</option>
+          <option value="TELECONSULTA">Teleconsulta</option>
           <option value="EVALUACION">Evaluación</option>
           <option value="REVISION">Revisión</option>
           <option value="OTRO">Otro</option>
         </select>
       </div>
+      @if (formActividad().tipo === 'CONSULTA' && citasDelDia().length > 0) {
+        <div class="form-group">
+          <label>Vincular a cita del día</label>
+          <select class="form-input" (change)="formActividad.update(f => ({...f, idCita: +($any($event.target).value)}))">
+            <option value="">Sin vincular</option>
+            @for (c of citasDelDia(); track c.idCita) {
+              <option [value]="c.idCita">{{ c.hora }} - {{ c.paciente }}</option>
+            }
+          </select>
+        </div>
+      }
+      @if (formActividad().tipo === 'TELECONSULTA') {
+        <div class="form-group">
+          <label>ID Teleconsulta (opcional)</label>
+          <input type="number" class="form-input" (change)="formActividad.update(f => ({...f, idTeleconsulta: +($any($event.target).value)}))" placeholder="Ej: 1">
+        </div>
+      }
       <div class="form-row">
         <div class="form-group">
           <label>Fecha</label>

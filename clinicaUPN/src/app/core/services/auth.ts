@@ -21,6 +21,16 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+  specialty?: string;
+  licenseNumber?: string;
+}
+
 export interface UserData {
   token: string;
   rol: string;
@@ -57,6 +67,10 @@ export class AuthService {
         }
       })
     );
+  }
+
+  register(data: RegisterRequest): Observable<{success: boolean; message: string; data: any}> {
+    return this.http.post<{success: boolean; message: string; data: any}>(`${this.API}/register`, data);
   }
 
   logout(): void {

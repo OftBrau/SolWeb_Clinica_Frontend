@@ -1,51 +1,78 @@
-<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
-  <div class="card shadow p-4" style="width: 380px">
-
-    <h4 class="text-center mb-4 fw-bold text-primary">Clínica UPN</h4>
-
-    <div class="mb-3">
-      <label class="form-label">Correo electrónico</label>
-      <input
-        type="email"
-        class="form-control"
-        [ngModel]="email()"
-        (ngModelChange)="email.set($event)"
-        placeholder="usuario@upn.edu.pe"
-      />
+<div class="login-container">
+  <!-- LEFT BRAND -->
+  <div class="login-left">
+    <div class="brand-info">
+      <svg viewBox="0 0 24 24" fill="none" width="64" height="64" stroke="currentColor" stroke-width="1" style="margin-bottom:1rem">
+        <rect x="4" y="2" width="16" height="20" rx="2"/>
+        <path d="M9 7h6M9 11h6M12 15v5" stroke-linecap="round"/>
+        <circle cx="12" cy="7" r="1" fill="currentColor"/>
+      </svg>
+      <h1>Clínica UPN</h1>
+      <p>Sistema Integral de Gestión de Salud Universitaria</p>
+      <div class="mt-4" style="opacity:.7">
+        <small><i class="bi bi-check-circle me-1"></i>Agenda de citas online</small><br>
+        <small><i class="bi bi-check-circle me-1"></i>Historia clínica electrónica</small><br>
+        <small><i class="bi bi-check-circle me-1"></i>Farmacia con delivery</small>
+      </div>
     </div>
-
-    <div class="mb-3">
-      <label class="form-label">Contraseña</label>
-      <input
-        type="password"
-        class="form-control"
-        [ngModel]="password()"
-        (ngModelChange)="password.set($event)"
-        placeholder="Ingresa tu contraseña"
-      />
-    </div>
-
-    @if (error()) {
-      <div class="alert alert-danger py-2 small text-center">{{ error() }}</div>
-    }
-
-    <button
-      class="btn btn-primary w-100 mt-2"
-      (click)="onLogin()"
-      [disabled]="loading()"
-    >
-      {{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}
-    </button>
-
-    <div class="text-center mt-3">
-      <a routerLink="/" class="text-decoration-none small text-muted">
-        <i class="bi bi-arrow-left"></i> Volver al inicio
-      </a>
-    </div>
-
   </div>
 
-  @if (showPasswordModal()) {
-    <app-change-password-modal (onClose)="onModalClose()" />
-  }
+  <!-- RIGHT FORM -->
+  <div class="login-right">
+    <div class="login-card">
+      <div class="tab-btns">
+        <button class="tab-btn" [class.active]="tab()==='login'" (click)="tab.set('login')">Iniciar Sesión</button>
+        <button class="tab-btn" [class.active]="tab()==='register'" (click)="tab.set('register')">Registrarse</button>
+      </div>
+
+      <!-- LOGIN -->
+      @if (tab() === 'login') {
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Correo electrónico</label>
+          <input type="email" class="form-control" [ngModel]="email()" (ngModelChange)="email.set($event)" placeholder="usuario@upn.edu.pe">
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Contraseña</label>
+          <input type="password" class="form-control" [ngModel]="password()" (ngModelChange)="password.set($event)" placeholder="••••••••">
+        </div>
+        @if (error()) { <div class="alert alert-danger py-2 small">{{ error() }}</div> }
+        <button class="btn btn-primary w-100 btn-login" (click)="onLogin()" [disabled]="loading()">
+          @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> } Iniciar sesión
+        </button>
+      }
+
+      <!-- REGISTER -->
+      @if (tab() === 'register') {
+        @if (regOk()) {
+          <div class="alert alert-success text-center py-3">
+            <i class="bi bi-check-circle-fill fs-3"></i>
+            <p class="mb-0 mt-2">¡Registro exitoso! Iniciando sesión...</p>
+          </div>
+        } @else {
+          <div class="row g-2">
+            <div class="col-6"><input class="form-control" placeholder="Nombre" [ngModel]="regFirst()" (ngModelChange)="regFirst.set($event)"></div>
+            <div class="col-6"><input class="form-control" placeholder="Apellido" [ngModel]="regLast()" (ngModelChange)="regLast.set($event)"></div>
+          </div>
+          <div class="mt-2"><input type="email" class="form-control" placeholder="Correo electrónico" [ngModel]="regEmail()" (ngModelChange)="regEmail.set($event)"></div>
+          <div class="mt-2"><input type="password" class="form-control" placeholder="Contraseña (mín. 6 caracteres)" [ngModel]="regPass()" (ngModelChange)="regPass.set($event)"></div>
+          <div class="mt-2">
+            <select class="form-select" [ngModel]="regRole()" (ngModelChange)="regRole.set($event)">
+              <option value="PRACTICANTE">Practicante</option>
+              <option value="PACIENTE">Paciente</option>
+            </select>
+          </div>
+          @if (regError()) { <div class="alert alert-danger py-2 small mt-2">{{ regError() }}</div> }
+          <button class="btn btn-primary w-100 btn-login mt-3" (click)="onRegister()" [disabled]="regLoading()">
+            @if (regLoading()) { <span class="spinner-border spinner-border-sm me-2"></span> } Crear cuenta
+          </button>
+        }
+      }
+
+      <div class="text-center mt-3">
+        <a routerLink="/" class="text-decoration-none small text-muted">
+          <i class="bi bi-arrow-left me-1"></i>Volver al inicio
+        </a>
+      </div>
+    </div>
+  </div>
 </div>

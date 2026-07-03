@@ -1,2 +1,151 @@
-<app-page-header title="Consultorios" subtitle="Gestión de consultorios"></app-page-header>
+<div class="page-wrapper">
+  <app-page-header title="Consultorios" subtitle="Gestión de consultorios y asignaciones"></app-page-header>
 
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" [class.active]="tab()==='crud'" (click)="tab.set('crud')">Consultorios</a></li>
+    <li class="nav-item"><a class="nav-link" [class.active]="tab()==='asignar'" (click)="tab.set('asignar'); cargarAsignaciones()">Asignaciones</a></li>
+    <li class="nav-item"><a class="nav-link" [class.active]="tab()==='dispo'" (click)="tab.set('dispo')">Disponibilidad</a></li>
+    <li class="nav-item"><a class="nav-link" [class.active]="tab()==='ocupacion'" (click)="tab.set('ocupacion'); buscarOcupacion()">Ocupación</a></li>
+  </ul>
+
+  <!-- TAB: CRUD -->
+  @if (tab() === 'crud') {
+    <button class="btn btn-primary btn-sm mb-3" (click)="nuevo()">+ Nuevo consultorio</button>
+
+    @if (mostrarForm()) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>{{ editando() ? 'Editar' : 'Nuevo' }} Consultorio</h6>
+          <div class="row g-2">
+            <div class="col-md-5"><input class="form-control" placeholder="Nombre" [(ngModel)]="form.nombre"></div>
+            <div class="col-md-5"><input class="form-control" placeholder="Ubicación" [(ngModel)]="form.ubicacion"></div>
+            <div class="col-md-2">
+              <button class="btn btn-sm btn-primary me-1" (click)="guardar()">Guardar</button>
+              <button class="btn btn-sm btn-secondary" (click)="mostrarForm.set(false)">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead><tr><th>#</th><th>Nombre</th><th>Ubicación</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+          @for (c of consultorios(); track c.idConsultorio) {
+            <tr>
+              <td>{{ c.idConsultorio }}</td>
+              <td>{{ c.nombre }}</td>
+              <td>{{ c.ubicacion }}</td>
+              <td><span class="badge" [class.bg-success]="c.estado==='ACTIVO'" [class.bg-secondary]="c.estado!=='ACTIVO'">{{ c.estado }}</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="editar(c)">Editar</button>
+                @if (c.estado === 'ACTIVO') {
+                  <button class="btn btn-sm btn-outline-danger" (click)="desactivar(c)">Desactivar</button>
+                } @else {
+                  <button class="btn btn-sm btn-outline-success" (click)="activar(c)">Activar</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- TAB: ASIGNACIONES -->
+  @if (tab() === 'asignar') {
+    <button class="btn btn-primary btn-sm mb-3" (click)="mostrarAsignar.set(!mostrarAsignar())">{{ mostrarAsignar() ? 'Cancelar' : '+ Nueva asignación' }}</button>
+
+    @if (mostrarAsignar()) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>Asignar doctor a consultorio</h6>
+          <div class="row g-2">
+            <div class="col-md-2"><label class="small">Consultorio</label><input type="number" class="form-control" placeholder="ID" [(ngModel)]="formAsig.idConsultorio"></div>
+            <div class="col-md-2"><label class="small">Doctor</label><input type="number" class="form-control" placeholder="ID" [(ngModel)]="formAsig.idDoctor"></div>
+            <div class="col-md-2"><label class="small">Día</label><select class="form-select" [(ngModel)]="formAsig.diaSemana">@for(d of dias; track d){<option [value]="d">{{d}}</option>}</select></div>
+            <div class="col-md-2"><label class="small">Inicio</label><select class="form-select" [(ngModel)]="formAsig.horaInicio">@for(h of horas; track h){<option [value]="h">{{h}}</option>}</select></div>
+            <div class="col-md-2"><label class="small">Fin</label><select class="form-select" [(ngModel)]="formAsig.horaFin">@for(h of horas; track h){<option [value]="h">{{h}}</option>}</select></div>
+            <div class="col-md-2 d-flex align-items-end"><button class="btn btn-sm btn-primary" (click)="asignar()">Asignar</button></div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead><tr><th>Consultorio</th><th>Doctor</th><th>Día</th><th>Inicio</th><th>Fin</th><th></th></tr></thead>
+        <tbody>
+          @for (a of asignaciones(); track a.idAsignacion) {
+            <tr>
+              <td>{{ a.consultorio }}</td>
+              <td>{{ a.doctor }}</td>
+              <td>{{ a.diaSemana }}</td>
+              <td>{{ a.horaInicio }}</td>
+              <td>{{ a.horaFin }}</td>
+              <td><button class="btn btn-sm btn-outline-danger" (click)="eliminarAsig(a)">Quitar</button></td>
+            </tr>
+          }
+          @if (asignaciones().length === 0) { <tr><td colspan="6" class="text-muted text-center">Sin asignaciones</td></tr> }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- TAB: DISPONIBILIDAD -->
+  @if (tab() === 'dispo') {
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3"><label class="small">Día</label><select class="form-select" [(ngModel)]="dispoDia">@for(d of dias; track d){<option [value]="d">{{d}}</option>}</select></div>
+          <div class="col-md-3"><label class="small">Hora</label><select class="form-select" [(ngModel)]="dispoHora">@for(h of horas; track h){<option [value]="h">{{h}}</option>}</select></div>
+          <div class="col-md-3"><button class="btn btn-primary" (click)="buscarDisponibles()" [disabled]="buscandoDispo()">Buscar</button></div>
+        </div>
+      </div>
+    </div>
+
+    @if (buscandoDispo()) { <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div> }
+    @if (disponibles().length > 0) {
+      <div class="row g-2">
+        @for (c of disponibles(); track c.idConsultorio) {
+          <div class="col-md-4">
+            <div class="card border-success">
+              <div class="card-body py-2"><strong>{{ c.nombre }}</strong><br><small class="text-muted">{{ c.ubicacion }}</small></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    @if (disponibles().length === 0 && !buscandoDispo()) {
+      <p class="text-muted">Seleccioná día y hora para ver consultorios libres.</p>
+    }
+  }
+
+  <!-- TAB: OCUPACION -->
+  @if (tab() === 'ocupacion') {
+    <div class="d-flex gap-2 mb-3">
+      <input type="date" class="form-control" style="max-width:200px" [ngModel]="ocupFecha()" (ngModelChange)="ocupFecha.set($event); buscarOcupacion()">
+    </div>
+    @if (cargandoOcup()) { <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div> }
+    @if (ocupacion().length === 0 && !cargandoOcup()) { <p class="text-muted">Sin citas en esta fecha.</p> }
+    @for (c of getConsultoriosUnicos(); track c.idConsultorio) {
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between"><strong>{{ c.nombre }}</strong><small class="text-muted">{{ c.ubicacion }}</small></div>
+        <div class="card-body">
+          @if (getCitasPorConsultorio(c.idConsultorio).length === 0) {
+            <span class="badge bg-success">Libre todo el día</span>
+          } @else {
+            <div class="d-flex flex-wrap gap-1">
+              @for (ct of getCitasPorConsultorio(c.idConsultorio); track ct.hora) {
+                <span class="badge" [style.background]="getEstadoColor(ct.estado)" style="font-size:.75rem;padding:4px 8px">
+                  {{ ct.hora }} - {{ ct.doctor }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

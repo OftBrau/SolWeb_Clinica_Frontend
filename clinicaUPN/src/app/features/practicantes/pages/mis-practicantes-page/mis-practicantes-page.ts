@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import {
   DoctorPracticanteService,
@@ -18,6 +19,7 @@ import {
 })
 export class MisPracticantesPageComponent implements OnInit {
   private service = inject(DoctorPracticanteService);
+  private http = inject(HttpClient);
 
   practicantes = signal<PracticanteAsignado[]>([]);
   actividades = signal<ActividadDTO[]>([]);
@@ -29,14 +31,9 @@ export class MisPracticantesPageComponent implements OnInit {
 
   // Modal actividad
   modalActividadVisible = signal(false);
-  formActividad = signal<{ idPracticante: number; titulo: string; descripcion: string; tipo: string; fecha: string; hora: string; idPaciente?: number }>({
-    idPracticante: 0,
-    titulo: '',
-    descripcion: '',
-    tipo: 'CONSULTA',
-    fecha: '',
-    hora: '',
-  });
+  formActividad = signal<{ idPracticante: number; titulo: string; descripcion: string; tipo: string; fecha: string; hora: string; idPaciente?: number; idCita?: number; idTeleconsulta?: number }>({
+    idPracticante: 0, titulo: '', descripcion: '', tipo: 'CONSULTA', fecha: '', hora: '' });
+  citasDelDia = signal<any[]>([]);
 
   // Modal evaluación
   modalEvalVisible = signal(false);
@@ -72,14 +69,13 @@ export class MisPracticantesPageComponent implements OnInit {
 
   abrirActividad(p: PracticanteAsignado): void {
     this.formActividad.set({
-      idPracticante: p.idPracticante,
-      titulo: '',
-      descripcion: '',
-      tipo: 'CONSULTA',
-      fecha: '',
-      hora: '',
+      idPracticante: p.idPracticante, titulo: '', descripcion: '', tipo: 'CONSULTA',
+      fecha: new Date().toISOString().split('T')[0], hora: ''
     });
     this.modalActividadVisible.set(true);
+    // Cargar citas del día
+    this.http.get<{data: any[]}>(`http://localhost:8080/api/consultas/agenda?fecha=${this.formActividad().fecha}`)
+      .subscribe(r => this.citasDelDia.set(r.data || []));
   }
 
   cerrarModalActividad(): void {
@@ -91,12 +87,11 @@ export class MisPracticantesPageComponent implements OnInit {
     if (!f.titulo || !f.tipo) return;
     this.service.crearActividad({
       idPracticante: f.idPracticante,
-      titulo: f.titulo,
-      descripcion: f.descripcion,
-      tipo: f.tipo,
-      fecha: f.fecha || undefined,
-      hora: f.hora || undefined,
+      titulo: f.titulo, descripcion: f.descripcion, tipo: f.tipo,
+      fecha: f.fecha || undefined, hora: f.hora || undefined,
       idPaciente: f.idPaciente || undefined,
+      idCita: f.idCita || undefined,
+      idTeleconsulta: f.idTeleconsulta || undefined,
     }).subscribe({
       next: () => {
         this.successMsg.set('Actividad creada');

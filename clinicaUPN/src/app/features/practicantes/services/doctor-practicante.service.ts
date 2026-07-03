@@ -42,6 +42,8 @@ export interface CrearActividadData {
   fecha?: string;
   hora?: string;
   idPaciente?: number;
+  idCita?: number;
+  idTeleconsulta?: number;
 }
 
 export interface CrearEvaluacionData {

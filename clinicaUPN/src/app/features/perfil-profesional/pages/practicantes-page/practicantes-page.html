@@ -1,0 +1,140 @@
+<div style="max-width:1100px;margin:0 auto">
+  <app-page-header title="Buscar Practicantes" subtitle="Encuentra talento según habilidades y perfil">
+    <input class="form-control" style="max-width:300px" placeholder="Filtrar por nombre, universidad, skills..." [ngModel]="filtro()" (ngModelChange)="filtro.set($event)">
+  </app-page-header>
+
+  @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
+
+  <div class="row g-3">
+    @for (d of practicantesFiltrados; track d.perfil.idPerfil) {
+      <div class="col-md-6">
+        <div class="card card-prac h-100 border shadow-sm">
+          <div class="card-body">
+            <div class="d-flex gap-3 mb-2">
+              @if (d.perfil.fotoUrl) { <img [src]="d.perfil.fotoUrl" style="width:56px;height:56px;border-radius:50%;object-fit:cover"> }
+              @else { <div style="width:56px;height:56px;border-radius:50%;background:var(--bs-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700">{{ (d.perfil?.nombreCompleto || '?').charAt(0) }}</div> }
+              <div class="flex-grow-1">
+                <h6 class="mb-0">{{ d.perfil.nombreCompleto }}</h6>
+                <small class="text-muted">{{ d.perfil.tituloProfesional || 'Practicante' }}</small>
+                <p class="small mb-0">{{ d.perfil.universidad }}</p>
+                @if (d.perfil.linkedinUrl) { <a [href]="d.perfil.linkedinUrl" target="_blank" class="small"><i class="bi bi-linkedin"></i></a> }
+              </div>
+              <div>
+                @if (invitados().has(d.perfil.idPracticante)) {
+                  <span class="badge bg-secondary mb-1 d-block">Invitado</span>
+                } @else {
+                  <button class="btn btn-sm btn-primary mb-1" (click)="invitar(d)"><i class="bi bi-send me-1"></i>Invitar</button>
+                }
+                <button class="btn btn-sm btn-outline-secondary" (click)="verPerfil.set(d)"><i class="bi bi-eye me-1"></i>Ver Perfil</button>
+              </div>
+            </div>
+            @if (d.habilidades?.length) {
+              <div class="mb-2">@for (h of d.habilidades; track h.id) { <span class="skill-tag">{{ h.nombre }}</span> }</div>
+            }
+            @if (d.experiencias?.length) {
+              <small class="text-muted d-block"><strong>Exp:</strong> {{ d.experiencias[0].cargo }} en {{ d.experiencias[0].empresa }}</small>
+            }
+            @if (d.certificaciones?.length) {
+              <small class="text-muted d-block"><strong>Cert:</strong> {{ d.certificaciones.length }} certificacion(es)</small>
+            }
+          </div>
+        </div>
+      </div>
+    }
+    @if (practicantesFiltrados.length === 0 && !cargando()) { <p class="text-muted text-center py-4">No se encontraron practicantes.</p> }
+  </div>
+</div>
+
+<!-- Modal Invitar -->
+@if (invId()) {
+  <div class="modal-backdrop show" (click)="invId.set(null)"></div>
+  <div class="modal d-block" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h6>Enviar invitación</h6><button class="btn-close" (click)="invId.set(null)"></button></div>
+    <div class="modal-body"><textarea class="form-control" rows="3" placeholder="Mensaje opcional..." [(ngModel)]="invMsg"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm btn-secondary" (click)="invId.set(null)">Cancelar</button>
+      <button class="btn btn-sm btn-primary" (click)="enviarInvitacion()" [disabled]="invEnviando()">
+        @if (invEnviando()) { <span class="spinner-border spinner-border-sm me-1"></span> } Enviar
+      </button>
+    </div>
+  </div></div></div>
+}
+
+<!-- Modal Ver Perfil -->
+@if (verPerfil(); as d) {
+  <div class="modal-backdrop show" (click)="verPerfil.set(null)"></div>
+  <div class="modal d-block" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header">
+      <h5>{{ d.perfil.nombreCompleto }}</h5>
+      <button class="btn-close" (click)="verPerfil.set(null)"></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Banner -->
+      @if (d.perfil.bannerUrl) {
+        @if (d.perfil.bannerUrl.includes('video')) {
+          <div style="position:relative;height:160px;overflow:hidden;border-radius:8px">
+            <video [src]="d.perfil.bannerUrl" style="width:100%;height:100%;object-fit:cover" autoplay [muted]="bannerMuted()" loop></video>
+            <button class="btn btn-sm btn-dark position-absolute bottom-0 end-0 m-2 opacity-75" (click)="bannerMuted.set(!bannerMuted())">
+              <i class="bi" [class.bi-volume-up-fill]="!bannerMuted()" [class.bi-volume-mute-fill]="bannerMuted()"></i>
+            </button>
+          </div>
+        } @else {
+          <img [src]="d.perfil.bannerUrl" style="width:100%;height:160px;object-fit:cover;border-radius:8px" alt="">
+        }
+      }
+
+      <!-- Basic Info -->
+      <div class="d-flex gap-3 my-3">
+        @if (d.perfil.fotoUrl) { <img [src]="d.perfil.fotoUrl" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-top:-40px;border:3px solid #fff;position:relative;z-index:1"> }
+        <div>
+          <h5>{{ d.perfil.nombreCompleto }}</h5>
+          <p class="mb-1">{{ d.perfil.tituloProfesional || 'Practicante' }}</p>
+          <p class="mb-0 small"><i class="bi bi-building me-1"></i>{{ d.perfil.universidad }}</p>
+          @if (d.perfil.biografia) { <p class="small mt-2">{{ d.perfil.biografia }}</p> }
+          @if (d.perfil.cvUrl) { <a [href]="d.perfil.cvUrl" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i>Descargar CV</a> }
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- Habilidades -->
+      @if (d.habilidades?.length) {
+        <h6>Habilidades</h6>
+        <div class="mb-3">@for (h of d.habilidades; track h.id) { <span class="skill-tag">{{ h.nombre }}</span> }</div>
+      }
+
+      <!-- Experiencia -->
+      @if (d.experiencias?.length) {
+        <h6>Experiencia</h6>
+        @for (e of d.experiencias; track e.id) {
+          <div class="border-bottom py-2">
+            <strong>{{ e.cargo }}</strong> en {{ e.empresa }}<br>
+            <small class="text-muted">{{ e.fechaInicio }} - {{ e.actualmente ? 'Actualidad' : e.fechaFin }}</small>
+            @if (e.descripcion) { <p class="small mb-0 mt-1">{{ e.descripcion }}</p> }
+          </div>
+        }
+      }
+
+      <!-- Educación -->
+      @if (d.educaciones?.length) {
+        <h6 class="mt-3">Educación</h6>
+        @for (e of d.educaciones; track e.id) {
+          <div class="border-bottom py-2"><strong>{{ e.titulo }}</strong> - {{ e.institucion }}</div>
+        }
+      }
+
+      <!-- Certificaciones -->
+      @if (d.certificaciones?.length) {
+        <h6 class="mt-3">Certificaciones</h6>
+        @for (c of d.certificaciones; track c.id) {
+          <div class="border-bottom py-2"><strong>{{ c.nombre }}</strong> - {{ c.institucion }} <small class="text-muted">{{ c.fechaEmision }}</small></div>
+        }
+      }
+    </div>
+    <div class="modal-footer">
+      @if (d.perfil.linkedinUrl) { <a [href]="d.perfil.linkedinUrl" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-linkedin"></i></a> }
+      <button class="btn btn-sm btn-secondary" (click)="verPerfil.set(null)">Cerrar</button>
+    </div>
+  </div></div></div>
+}

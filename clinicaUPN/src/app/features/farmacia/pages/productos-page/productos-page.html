@@ -1,0 +1,89 @@
+<div class="page-wrapper" style="padding-top:100px;padding-left:1rem;padding-right:1rem">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Farmacia</h2>
+  </div>
+
+  <div class="search-bar mb-3">
+    <input type="text" class="form-control" placeholder="Buscar producto..."
+           [value]="searchText()" (input)="filtrarBusqueda($any($event.target).value)">
+  </div>
+
+  <div class="row g-4">
+    <!-- SIDEBAR FILTROS -->
+    <div class="col-lg-3">
+      <div class="filter-sidebar">
+        <h6 class="fw-bold mb-1">Categorías</h6>
+        <div class="d-flex flex-column gap-1 mb-4">
+          @for (cat of categorias(); track cat) {
+            <a class="filter-link" [class.active]="categoriaSeleccionada() === cat" (click)="filtrar(cat)">
+              {{ cat === 'TODOS' ? 'Todos' : labelCat(cat) }}
+            </a>
+          }
+        </div>
+
+        <h6 class="fw-bold mb-2">Precio máximo</h6>
+        <div class="mb-4">
+          <input type="range" class="form-range" min="0" [max]="precioMaximo()" [value]="precioMaximo()"
+                 (input)="actualizarPrecio(+$any($event.target).value)">
+          <div class="d-flex justify-content-between small text-muted">
+            <span>S/ 0</span>
+            <span>S/ {{ precioMaximo() }}</span>
+          </div>
+        </div>
+
+        <h6 class="fw-bold mb-2">Receta médica</h6>
+        <div class="d-flex gap-2 mb-4">
+          <button class="btn btn-sm" [class.btn-primary]="soloReceta() === true" [class.btn-outline-primary]="soloReceta() !== true"
+                  (click)="alternarReceta(true)">Con receta</button>
+          <button class="btn btn-sm" [class.btn-primary]="soloReceta() === false" [class.btn-outline-primary]="soloReceta() !== false"
+                  (click)="alternarReceta(false)">Sin receta</button>
+        </div>
+        @if (soloReceta() !== null) {
+          <button class="btn btn-sm btn-link text-decoration-none p-0" (click)="alternarReceta(null)">Limpiar filtro</button>
+        }
+      </div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="col-lg-9">
+      @if (cargando()) {
+        <div class="text-center py-5"><div class="spinner-border"></div></div>
+      } @else if (productos().length === 0) {
+        <p class="text-muted text-center py-5">No se encontraron productos.</p>
+      } @else {
+        <div class="products-grid">
+          @for (p of productos(); track p.idMedicamento) {
+            <div class="product-card">
+              @if (p.fotoUrl) {
+                <img [src]="p.fotoUrl" [alt]="p.nombreComercial" class="product-img">
+              } @else {
+                <div class="product-img-placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" width="32" height="32" stroke="currentColor" stroke-width="1.2">
+                    <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 7h6M9 11h6M12 15v5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              }
+              <div class="product-badges">
+                @if (p.requiereReceta) { <span class="badge-receta">Receta</span> }
+                @if (p.categoria) { <span class="badge-cat">{{ labelCat(p.categoria) }}</span> }
+              </div>
+              <h5 class="product-name">{{ p.nombreComercial }}</h5>
+              @if (p.nombreGenerico) {
+                <small class="text-muted d-block">{{ p.nombreGenerico }}</small>
+              }
+              <div class="product-meta">
+                @if (p.laboratorio) { <span>{{ p.laboratorio }}</span> }
+                @if (p.presentacion) { <span>{{ p.presentacion }} {{ p.concentracion }}</span> }
+              </div>
+              <div class="product-footer">
+                <span class="product-price">S/ {{ p.precioUnitario | number:'1.2-2' }}</span>
+                <button class="btn btn-sm btn-primary" (click)="agregarAlCarrito(p)">Agregar</button>
+              </div>
+              <small class="stock-info" [class.text-danger]="p.stock <= 3">Stock: {{ p.stock }}</small>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -11,6 +11,9 @@
       <div class="noti-header">
         <strong>Notificaciones</strong>
         <span class="text-muted small">({{ notiSvc.notificaciones().length }})</span>
+        <button class="btn btn-sm btn-link text-decoration-none p-0 ms-auto" (click)="notiSvc.toggleMute(); $event.stopPropagation()" title="Silenciar sonido">
+          <i class="bi" [class.bi-volume-up-fill]="!notiSvc.muted()" [class.bi-volume-mute-fill]="notiSvc.muted()"></i>
+        </button>
       </div>
       <div class="noti-lista">
         @if (notiSvc.notificaciones().length === 0) {
@@ -20,7 +23,7 @@
           </div>
         }
         @for (n of notiSvc.notificaciones(); track n.timestamp + n.teleconsultaId) {
-          <div class="noti-item" [class.noti-item--nueva]="!n.leida" (click)="ir(n.teleconsultaId)">
+          <div class="noti-item" [class.noti-item--nueva]="!n.leida" (click)="ir(n.tipo, n.teleconsultaId)">
             <div class="noti-icon">
               @switch (n.tipo) {
                 @case ('NUEVA_CONSULTA') { <i class="bi bi-plus-circle-fill text-warning"></i> }

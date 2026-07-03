@@ -1,0 +1,37 @@
+<div class="page-wrapper">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mis Compras</h2>
+    <a routerLink="/app/farmacia/productos" class="btn btn-outline-primary btn-sm">Ver productos</a>
+  </div>
+
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border"></div></div>
+  } @else if (ventas().length === 0) {
+    <div class="text-center py-5">
+      <p class="text-muted">No tienes compras registradas.</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead><tr><th>#</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Detalle</th></tr></thead>
+        <tbody>
+          @for (v of ventas(); track v.idVenta) {
+            <tr>
+              <td>{{ v.idVenta }}</td>
+              <td>{{ v.fechaVenta | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>S/ {{ v.total | number:'1.2-2' }}</td>
+              <td><span class="badge" [class]="estadoBadge(v.estado)">{{ v.estado }}</span></td>
+              <td>
+                <ul class="list-unstyled mb-0 small">
+                  @for (d of v.detalles; track d.idDetalle) {
+                    <li>{{ d.nombreComercial }} x{{ d.cantidad }}</li>
+                  }
+                </ul>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

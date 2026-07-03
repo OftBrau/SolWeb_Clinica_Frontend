@@ -14,6 +14,7 @@ export interface CitaDTO {
   hora: string;
   estado: string;
   motivo?: string;
+  consultorio?: string;
   createdAt?: string;
 }
 
