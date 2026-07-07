@@ -1,15 +1,19 @@
 <div class="page-wrapper">
-  <div class="mb-4">
-    <h2>Libro de Reclamaciones</h2>
-    <p class="text-muted">Conforme a lo establecido en el Código de Protección y Defensa del Consumidor (Ley N° 29571) e INDECOPI.</p>
+  <div class="text-center mb-4">
+    <i class="bi bi-journal-text" style="font-size: 2.5rem; color: var(--accent);"></i>
+    <h2 class="mt-2">Libro de Reclamaciones</h2>
+    <p class="text-muted">Ley N° 29571 — Código de Protección y Defensa del Consumidor</p>
   </div>
 
   @if (exito()) {
-    <div class="alert alert-success text-center py-4">
-      <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+    <div class="text-center py-4">
+      <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
       <h5 class="mt-2">Reclamo registrado</h5>
       <p class="mb-0">Tu {{ form.tipo === 'QUEJA' ? 'queja' : 'reclamo' }} ha sido registrado. Te contactaremos pronto.</p>
-      <button class="btn btn-outline-primary btn-sm mt-3" (click)="otroReclamo()">Registrar otro</button>
+      <div class="d-flex justify-content-center gap-2 mt-3">
+        <button class="btn btn-outline-secondary btn-sm" (click)="volver()">Volver</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="otroReclamo()">Registrar otro reclamo</button>
+      </div>
     </div>
   } @else {
     @if (autenticado && !mostrarForm()) {
@@ -19,43 +23,61 @@
     @if (mostrarForm()) {
       <div class="card mb-4">
         <div class="card-body">
-          <h5>Registrar {{ form.tipo === 'QUEJA' ? 'Queja' : 'Reclamo' }}</h5>
+          <p class="text-muted small mb-4">Los campos marcados con <span class="text-danger">*</span> son obligatorios. Recibirá una copia de este reclamo en su correo electrónico.</p>
           <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Nombre completo *</label>
-              <input class="form-control" [(ngModel)]="form.nombreCompleto" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Email</label>
-              <input class="form-control" [(ngModel)]="form.email" type="email">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Teléfono</label>
-              <input class="form-control" [(ngModel)]="form.telefono">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Tipo *</label>
+            <div class="col-12">
+              <label class="form-label">Tipo de reclamo <span class="text-danger">*</span></label>
               <select class="form-select" [(ngModel)]="form.tipo">
                 <option value="RECLAMO">Reclamo</option>
                 <option value="QUEJA">Queja</option>
               </select>
             </div>
-            <div class="col-md-8">
-              <label class="form-label">Producto / Servicio</label>
-              <input class="form-control" [(ngModel)]="form.productoServicio" placeholder="Ej: Paracetamol, consulta médica...">
+            <div class="col-md-6">
+              <label class="form-label">Nombres completos <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.nombreCompleto" placeholder="Ej: Juan Carlos" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Apellidos completos <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.apellidos" placeholder="Ej: Pérez García" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">DNI <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.dni" placeholder="Ej: 12345678" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.email" type="email" placeholder="Ej: correo@ejemplo.com" required>
             </div>
             <div class="col-12">
-              <label class="form-label">Descripción *</label>
-              <textarea class="form-control" rows="4" [(ngModel)]="form.descripcion" placeholder="Describe tu reclamo o queja..."></textarea>
+              <label class="form-label">Dirección <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.direccion" placeholder="Ej: Av. Los Olivos 123" required>
             </div>
             <div class="col-12">
-              <button class="btn btn-primary" (click)="enviar()" [disabled]="guardando() || !form.nombreCompleto || !form.descripcion">
-                @if (guardando()) { <span class="spinner-border spinner-border-sm me-1"></span> }
-                Enviar
-              </button>
-              @if (autenticado) {
-                <button class="btn btn-secondary ms-2" (click)="mostrarForm.set(false)">Cancelar</button>
-              }
+              <label class="form-label">Teléfono</label>
+              <input class="form-control" [(ngModel)]="form.telefono" placeholder="Ej: 987654321">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Producto / Servicio <span class="text-danger">*</span></label>
+              <input class="form-control" [(ngModel)]="form.productoServicio" placeholder="Ej: Paracetamol 500mg, consulta médica..." required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripción <span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="4" [(ngModel)]="form.descripcion" placeholder="Describa detalladamente su reclamo o queja..."></textarea>
+            </div>
+            <div class="col-12 pt-2">
+              <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary px-4 flex-shrink-0" (click)="enviar()" [disabled]="guardando() || !form.nombreCompleto || !form.apellidos || !form.dni || !form.email || !form.descripcion">
+                  @if (guardando()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                  Enviar Reclamo
+                </button>
+                @if (autenticado) {
+                  <button class="btn btn-secondary flex-shrink-0" (click)="cancelar()">Cancelar</button>
+                }
+                <small class="text-muted ms-auto text-end" style="line-height: 1.4;">
+                  Copia enviada a su correo electrónico.<br>
+                  Respuesta en máximo 15 días hábiles.
+                </small>
+              </div>
             </div>
           </div>
         </div>

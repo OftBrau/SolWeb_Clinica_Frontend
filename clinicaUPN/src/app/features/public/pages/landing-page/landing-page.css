@@ -473,7 +473,6 @@ section[id] {
 .product-carousel-col {
   flex-shrink: 0;
   width: 380px;
-  border-radius: 16px;
 }
 
 .product-img-wrap {
@@ -500,7 +499,6 @@ section[id] {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -660,125 +658,43 @@ section[id] {
   background: var(--bg-muted);
 }
 
-.circular-wrapper {
+.esp-featured {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  text-align: center;
+  gap: 1.5rem;
 }
 
 @media (min-width: 768px) {
-  .circular-wrapper {
+  .esp-featured {
     flex-direction: row;
-    align-items: center;
-    gap: 4rem;
+    text-align: left;
+    align-items: flex-start;
+    gap: 2.5rem;
+    justify-content: center;
   }
 }
 
-/* Columna imágenes */
-.circular-images {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  justify-content: center;
+.esp-featured-avatar {
+  position: relative;
+  width: 140px;
+  height: 140px;
   flex-shrink: 0;
 }
 
-@media (min-width: 768px) {
-  .circular-images {
-    flex-direction: column;
-    gap: 20px;
-  }
-}
-
-/* Wrapper individual */
-.circ-img-wrap {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform .3s ease, box-shadow .3s ease, opacity .3s ease;
-}
-
-/* Estados */
-.card-center {
-  width: 110px;
-  height: 130px;
-  opacity: 1;
-  transform: scale(1.08);
-  box-shadow: 0 8px 28px rgba(24,95,165,0.25);
-  border: 3px solid var(--accent);
-  z-index: 2;
-}
-
-.card-left,
-.card-right {
-  width: 88px;
-  height: 105px;
-  opacity: 0.55;
-  transform: scale(0.93);
-  border: 2px solid transparent;
-}
-
-.card-hidden {
-  display: none;
-}
-
-.circ-img {
+.esp-featured-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  transition: transform .35s ease;
-}
-
-.circ-img-wrap:hover .circ-img {
-  transform: scale(1.06);
-}
-
-.circ-img-badge {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 4px 6px;
-  background: rgba(4,44,83,0.75);
-  color: #fff;
-  font-size: 9px;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.2;
-  backdrop-filter: blur(4px);
-}
-
-/* Columna contenido */
-.circular-content {
-  flex: 1;
-  max-width: 460px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* Avatar grande */
-.circ-avatar-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-
-.circ-avatar {
-  width: 80px;
-  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   object-position: top center;
-  border: 3px solid var(--accent);
+  border: 4px solid var(--accent);
 }
 
-.circ-avatar-ring {
+.esp-featured-ring {
   position: absolute;
-  inset: -5px;
+  inset: -6px;
   border-radius: 50%;
   border: 2px dashed rgba(24,95,165,0.3);
   animation: spin 12s linear infinite;
@@ -788,92 +704,101 @@ section[id] {
   to { transform: rotate(360deg); }
 }
 
-/* Quote */
-.circ-quote {
-  font-size: .9rem;
-  color: var(--text-secondary);
-  line-height: 1.75;
-  border-left: 3px solid var(--accent);
-  padding-left: 1rem;
-  margin: 0;
+.esp-featured-info {
+  max-width: 480px;
 }
 
-/* Dots */
-.circ-dots {
+/* Fila de doctores */
+.esp-row {
   display: flex;
-  gap: 8px;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
 }
 
-.circ-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: .2;
-  cursor: pointer;
-  transition: opacity .2s ease, width .2s ease;
-  display: inline-block;
+.esp-row::-webkit-scrollbar {
+  height: 4px;
 }
 
-.circ-dot.active {
-  opacity: 1;
-  width: 24px;
+.esp-row::-webkit-scrollbar-thumb {
+  background: var(--border-color);
   border-radius: 4px;
 }
 
-/* Flechas */
-.circ-arrows {
+.esp-row-card {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
   display: flex;
-  gap: 10px;
-}
-
-.circ-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border-color);
-  background: var(--bg-card);
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: .9rem;
-  color: var(--text-primary);
+  gap: 6px;
   cursor: pointer;
-  transition: background .2s ease, border-color .2s ease, color .2s ease;
+  padding: 12px 8px;
+  border-radius: 16px;
+  transition: background .2s ease, box-shadow .2s ease;
+  border: 2px solid transparent;
 }
 
-.circ-btn:hover {
-  background: var(--accent);
+.esp-row-card.active {
+  background: var(--bg-card);
   border-color: var(--accent);
-  color: var(--text-inverse);
+  box-shadow: 0 4px 16px rgba(24,95,165,0.2);
 }
 
+.esp-row-card:hover:not(.active) {
+  background: var(--bg-hover);
+}
+
+.esp-row-img-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--border-color);
+  transition: border-color .2s;
+}
+
+.esp-row-card.active .esp-row-img-wrap {
+  border-color: var(--accent);
+}
+
+.esp-row-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.esp-row-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.esp-row-esp {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  display: none;
+}
+
+.esp-row-card.active .esp-row-esp {
+  display: block;
+}
 
 /* ── Dark Mode Overrides ───────────────────────── */
 [data-theme="dark"] .esp-section {
   background: linear-gradient(135deg, #1a1f30 0%, #0f172a 60%, #1a2a1e 100%);
 }
 
-[data-theme="dark"] .card-center {
-  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-}
-
-[data-theme="dark"] .card-left,
-[data-theme="dark"] .card-right {
-  border-color: rgba(255,255,255,0.08);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-}
-
-[data-theme="dark"] .circ-avatar-ring {
-  border-color: rgba(255,255,255,0.15);
-}
-
 [data-theme="dark"] .contact-card {
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-[data-theme="dark"] .circ-btn {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 [data-theme="dark"] .product-carousel-col img {

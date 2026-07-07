@@ -734,72 +734,54 @@
 </section>
 }
 
-<!-- ESPECIALIDADES CIRCULAR -->
 <!-- ESPECIALIDADES -->
 <section id="especialidades" class="py-5 esp-section">
   <div class="container">
     <h2 class="text-center fw-bold mb-2">{{ t('esp.title') }}</h2>
-    <p class="text-center text-muted mb-5">{{ t('esp.subtitle') }}</p>
+    <p class="text-center text-muted mb-5 pb-5">{{ t('esp.subtitle') }}</p>
 
-    <div class="circular-wrapper">
-      <!-- Imágenes -->
-      <div class="circular-images">
-        @for (e of especialidades(); track e.nombre; let i = $index) {
-          <div class="circ-img-wrap" [class]="getCardClass(i)" (click)="servicioGoTo(i)">
-            <img [src]="e.foto" [alt]="e.nombre" class="circ-img" loading="lazy" />
-            <div class="circ-img-badge">{{ e.nombre }}</div>
-          </div>
-        }
-      </div>
-
-      <!-- Contenido activo -->
-      @if (especialidades().length > 0) {
-        <div class="circular-content">
-          <div class="circ-avatar-wrap mb-3">
-            <img
-              [src]="especialidades()[activeIndex()].foto"
-              [alt]="especialidades()[activeIndex()].nombre"
-              class="circ-avatar"
-              loading="lazy"
-            />
-            <div class="circ-avatar-ring"></div>
-          </div>
-
+    @if (especialidades().length > 0) {
+      <!-- Doctor destacado -->
+      <div class="esp-featured">
+        <div class="esp-featured-avatar">
+          <img
+            [src]="especialidades()[activeIndex()].foto"
+            [alt]="especialidades()[activeIndex()].nombre"
+            loading="lazy"
+          />
+          <div class="esp-featured-ring"></div>
+        </div>
+        <div class="esp-featured-info">
           <h3 class="fw-bold mb-1">{{ especialidades()[activeIndex()].nombre }}</h3>
           <p class="fw-semibold mb-2 text-brand" style="font-size: 14px;">
             {{ especialidades()[activeIndex()].especialidad }}
           </p>
-
           @if (especialidades()[activeIndex()].descripcion) {
             <p class="text-muted mb-1" style="font-size: 0.85rem; line-height: 1.5;">
               {{ especialidades()[activeIndex()].descripcion }}
             </p>
           }
-
           @if (especialidades()[activeIndex()].bibliografia) {
             <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.5; opacity: 0.8;">
               <i class="bi bi-book me-1"></i> {{ especialidades()[activeIndex()].bibliografia }}
             </p>
           }
-
-          <div class="circ-dots mt-3">
-            @for (e of especialidades(); track e.nombre; let i = $index) {
-              <span class="circ-dot" [class.active]="i === activeIndex()" (click)="servicioGoTo(i)">
-              </span>
-            }
-          </div>
-
-          <div class="circ-arrows mt-3">
-            <button class="circ-btn" (click)="goPrev()">
-              <i class="bi bi-arrow-left"></i>
-            </button>
-            <button class="circ-btn" (click)="goNext()">
-              <i class="bi bi-arrow-right"></i>
-            </button>
-          </div>
         </div>
-      }
-    </div>
+      </div>
+
+      <!-- Fila de doctores -->
+      <div class="esp-row mt-5">
+        @for (e of especialidades(); track e.nombre; let i = $index) {
+          <div class="esp-row-card" [class.active]="i === activeIndex()" (click)="servicioGoTo(i)">
+            <div class="esp-row-img-wrap">
+              <img [src]="e.foto" [alt]="e.nombre" loading="lazy" />
+            </div>
+            <span class="esp-row-name">{{ e.nombre }}</span>
+            <span class="esp-row-esp">{{ e.especialidad }}</span>
+          </div>
+        }
+      </div>
+    }
   </div>
 </section>
 

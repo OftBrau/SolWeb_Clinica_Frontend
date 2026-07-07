@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FarmaciaService, ReclamacionDTO, CrearReclamacionRequest } from '../../services/farmacia.service';
 import { AuthService } from '../../../../core/services/auth';
 
@@ -14,6 +15,7 @@ import { AuthService } from '../../../../core/services/auth';
 export class ReclamacionesPageComponent {
   private service = inject(FarmaciaService);
   private auth = inject(AuthService);
+  private router = inject(Router);
 
   reclamaciones = signal<ReclamacionDTO[]>([]);
   cargando = signal(false);
@@ -25,6 +27,9 @@ export class ReclamacionesPageComponent {
 
   form = {
     nombreCompleto: '',
+    apellidos: '',
+    dni: '',
+    direccion: '',
     email: '',
     telefono: '',
     tipo: 'RECLAMO',
@@ -56,7 +61,7 @@ export class ReclamacionesPageComponent {
       next: () => {
         this.guardando.set(false);
         this.exito.set(true);
-        this.form = { nombreCompleto: '', email: '', telefono: '', tipo: 'RECLAMO', descripcion: '', productoServicio: '' };
+        this.form = { nombreCompleto: '', apellidos: '', dni: '', direccion: '', email: '', telefono: '', tipo: 'RECLAMO', descripcion: '', productoServicio: '' };
         if (this.autenticado) { this.cargar(); this.mostrarForm.set(false); }
       },
       error: (e) => {
@@ -66,7 +71,9 @@ export class ReclamacionesPageComponent {
     });
   }
 
+  cancelar() { this.router.navigateByUrl('/'); }
   otroReclamo() { this.exito.set(false); this.mostrarForm.set(true); }
+  volver() { this.exito.set(false); this.mostrarForm.set(false); }
 
   estadoBadge(estado: string): string {
     const m: Record<string, string> = { PENDIENTE: 'bg-warning', EN_PROCESO: 'bg-info', RESUELTO: 'bg-success', CERRADO: 'bg-secondary' };
