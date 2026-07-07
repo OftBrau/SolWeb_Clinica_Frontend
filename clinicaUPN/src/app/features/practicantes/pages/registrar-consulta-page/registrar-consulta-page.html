@@ -1,5 +1,13 @@
-<div class="registrar-container">
-  <app-page-header title="Registrar Consulta"></app-page-header>
+<div class="registrar-container" style="max-width:1320px;margin:0 auto">
+  <app-page-header
+    title="Registrar Consulta"
+    icon="bi-journal-plus"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Practicantes' },
+      { label: 'Registrar Consulta' }
+    ]">
+  </app-page-header>
 
   <div class="msg" *ngIf="mensaje()" [class.success]="consultaRegistrada() && mensaje() !== 'Error al registrar la consulta.' && mensaje() !== 'Error al enviar a revisión.'">
     {{ mensaje() }}

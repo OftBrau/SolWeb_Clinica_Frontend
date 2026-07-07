@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { FarmaciaService, CarritoItemDTO, CrearVentaRequest } from '../../services/farmacia.service';
 import { CartService } from '../../services/cart.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { concatMap, from } from 'rxjs';
 
 @Component({
   selector: 'app-carrito-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PageHeaderComponent],
   templateUrl: './carrito-page.html',
   styleUrl: './carrito-page.css'
 })

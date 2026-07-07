@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PerfilProfesionalService, PerfilData } from '../../services/perfil-profesional.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-mi-perfil-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './mi-perfil-page.html',
   styles: [`
     .profile-banner { width: 100%; height: 250px; border-radius: 12px 12px 0 0; object-fit: cover; background: linear-gradient(135deg, #0a66c2, #185fa5); }

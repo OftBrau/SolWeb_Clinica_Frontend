@@ -9,9 +9,14 @@ import { AuthService } from '../../core/services/auth';
   standalone: true,
   imports: [CommonModule, PageHeaderComponent],
   template: `
-    <div style="max-width:800px;margin:0 auto">
+    <div style="max-width:1320px;margin:0 auto">
       <app-page-header [title]="esPracticante ? 'Mis Invitaciones' : 'Invitaciones Enviadas'"
-        subtitle="Gestión de invitaciones a prácticas">
+        subtitle="Gestión de invitaciones a prácticas"
+        icon="bi-envelope-paper"
+        [breadcrumbs]="[
+          { label: 'Inicio', link: '/app' },
+          { label: 'Invitaciones' }
+        ]">
         <button class="btn btn-sm btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
       </app-page-header>
       @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }

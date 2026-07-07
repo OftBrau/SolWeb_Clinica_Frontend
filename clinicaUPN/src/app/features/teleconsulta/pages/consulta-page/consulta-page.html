@@ -1,6 +1,13 @@
 <div class="tc-container">
 
-  <app-page-header title="Teleconsultas" subtitle="Atención médica desde donde estés">
+  <app-page-header
+    title="Teleconsultas"
+    subtitle="Atención médica desde donde estés"
+    icon="bi-camera-video"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Teleconsultas' }
+    ]">
     @if (!esDoctor()) {
       <button class="btn btn-primary btn-sm" (click)="abrirFormulario()">
         <i class="bi bi-plus-lg me-1"></i>Solicitar teleconsulta

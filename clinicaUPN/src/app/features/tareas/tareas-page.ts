@@ -3,15 +3,22 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-tareas-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
-    <div style="max-width:900px;margin:0 auto">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Mis Tareas</h2>
+    <div style="max-width:1320px;margin:0 auto">
+      <app-page-header
+        title="Mis Tareas"
+        subtitle="Gestión de tareas y actividades asignadas"
+        icon="bi-list-check"
+        [breadcrumbs]="[
+          { label: 'Inicio', link: '/app' },
+          { label: 'Mis Tareas' }
+        ]">
         @if (mostrarAsignar()) {
           <div class="d-flex gap-2">
             <input class="form-control form-control-sm" placeholder="Título" [(ngModel)]="nuevaTarea.titulo" style="width:200px">
@@ -26,7 +33,7 @@ import { AuthService } from '../../core/services/auth';
             <button class="btn btn-sm btn-primary" (click)="asignarTarea()">Asignar</button>
           </div>
         }
-      </div>
+      </app-page-header>
 
       <div class="row g-3">
         @for (col of columns; track col.key) {

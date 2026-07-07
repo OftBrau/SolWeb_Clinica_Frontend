@@ -4,11 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { FarmaciaService, MedicamentoDTO } from '../../services/farmacia.service';
 import { AuthService } from '../../../../core/services/auth';
 import { CartService } from '../../services/cart.service';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-productos-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PageHeaderComponent],
   templateUrl: './productos-page.html',
   styleUrl: './productos-page.css'
 })

@@ -1,5 +1,12 @@
 <div class="hce-container">
-  <app-page-header title="Historia Clínica" subtitle="Documentos y reportes de tu historial médico">
+  <app-page-header
+    title="Historia Clínica"
+    subtitle="Documentos y reportes de tu historial médico"
+    icon="bi-file-medical"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Mi Historial' }
+    ]">
     <button class="btn btn-outline-primary btn-sm" (click)="cargar()">
       <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
     </button>

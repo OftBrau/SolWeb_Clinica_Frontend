@@ -1,5 +1,12 @@
-<div class="agenda-container">
-  <app-page-header title="Mi Agenda de Actividades">
+<div class="agenda-container" style="max-width:1320px;margin:0 auto">
+  <app-page-header
+    title="Mi Agenda de Actividades"
+    icon="bi-calendar-week"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Practicantes' },
+      { label: 'Mi Agenda' }
+    ]">
     <button class="btn btn-outline-primary btn-sm" (click)="cargarActividades()">
       <i data-lucide="refresh-cw" style="width:16px;height:16px;margin-right:4px"></i>Actualizar
     </button>

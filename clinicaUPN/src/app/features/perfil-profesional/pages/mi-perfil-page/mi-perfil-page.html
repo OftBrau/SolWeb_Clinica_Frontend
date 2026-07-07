@@ -1,4 +1,14 @@
-<div style="max-width: 800px; margin: 0 auto;">
+<div style="max-width: 1320px; margin: 0 auto;">
+  <app-page-header
+    title="Mi Perfil Profesional"
+    subtitle="Gestiona tu perfil público, habilidades y experiencia"
+    icon="bi-briefcase"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Perfil Profesional' }
+    ]">
+  </app-page-header>
+
   @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
 
   @if (data(); as d) {
@@ -53,69 +63,78 @@
       </div>
     </div>
 
-    <!-- ACERCA DE -->
-    <div class="section-card position-relative">
-      <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('basico')"><i class="bi bi-pencil"></i></button>
-      <h5>Acerca de</h5>
-      <p class="mb-0">{{ d.perfil.biografia || 'Sin biografía. Haz clic para agregar.' }}</p>
-    </div>
-
-    <!-- CV -->
-    <div class="section-card">
-      <h5><i class="bi bi-file-earmark-text me-1"></i> CV / Hoja de Vida</h5>
-      @if (d.perfil.cvUrl) { <a [href]="d.perfil.cvUrl" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i>Ver CV</a> }
-      <input type="file" hidden #cvInput (change)="uploadCv($event)" accept=".pdf,.doc,.docx,.png,.jpg">
-      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="cvInput.click()"><i class="bi bi-upload me-1"></i>{{ d.perfil.cvUrl ? 'Actualizar CV' : 'Subir CV' }}</button>
-    </div>
-
-    <!-- EXPERIENCIA -->
-    <div class="section-card position-relative">
-      <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('exp')"><i class="bi bi-plus-lg"></i></button>
-      <h5><i class="bi bi-briefcase me-1"></i> Experiencia</h5>
-      @for (e of d.experiencias; track e.id) {
-        <div class="d-flex justify-content-between align-items-start border-bottom py-2">
-          <div><strong>{{ e.cargo }}</strong> en {{ e.empresa }}<br><small class="text-muted">{{ e.fechaInicio }} - {{ e.actualmente ? 'Actualidad' : e.fechaFin }}</small></div>
-          <button class="btn btn-sm text-danger" (click)="delExp(e.id)"><i class="bi bi-trash"></i></button>
+    <!-- SECTIONS: 2-column layout (col-4 / col-8) -->
+    <div class="row g-3">
+      <!-- LEFT COLUMN 4 -->
+      <div class="col-md-4">
+        <!-- Acerca de -->
+        <div class="section-card position-relative">
+          <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('basico')"><i class="bi bi-pencil"></i></button>
+          <h5>Acerca de</h5>
+          <p class="mb-0">{{ d.perfil.biografia || 'Sin biografía. Haz clic para agregar.' }}</p>
         </div>
-      }
-      @if (d.experiencias.length === 0) { <p class="text-muted small">Sin experiencia registrada.</p> }
-    </div>
 
-    <!-- EDUCACIÓN -->
-    <div class="section-card position-relative">
-      <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('edu')"><i class="bi bi-plus-lg"></i></button>
-      <h5><i class="bi bi-mortarboard me-1"></i> Educación</h5>
-      @for (e of d.educaciones; track e.id) {
-        <div class="d-flex justify-content-between align-items-start border-bottom py-2">
-          <div><strong>{{ e.titulo }}</strong><br><small class="text-muted">{{ e.institucion }}</small></div>
-          <button class="btn btn-sm text-danger" (click)="delEdu(e.id)"><i class="bi bi-trash"></i></button>
+        <!-- CV -->
+        <div class="section-card mt-3">
+          <h5><i class="bi bi-file-earmark-text me-1"></i> CV / Hoja de Vida</h5>
+          @if (d.perfil.cvUrl) { <a [href]="d.perfil.cvUrl" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i>Ver CV</a> }
+          <input type="file" hidden #cvInput (change)="uploadCv($event)" accept=".pdf,.doc,.docx,.png,.jpg">
+          <button class="btn btn-sm btn-outline-secondary ms-2" (click)="cvInput.click()"><i class="bi bi-upload me-1"></i>{{ d.perfil.cvUrl ? 'Actualizar CV' : 'Subir CV' }}</button>
         </div>
-      }
-      @if (d.educaciones.length === 0) { <p class="text-muted small">Sin educación registrada.</p> }
-    </div>
 
-    <!-- CERTIFICACIONES -->
-    <div class="section-card position-relative">
-      <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('cert')"><i class="bi bi-plus-lg"></i></button>
-      <h5><i class="bi bi-patch-check me-1"></i> Certificaciones</h5>
-      @for (c of d.certificaciones; track c.id) {
-        <div class="d-flex justify-content-between align-items-start border-bottom py-2">
-          <div><strong>{{ c.nombre }}</strong><br><small class="text-muted">{{ c.institucion }} {{ c.fechaEmision }}</small></div>
-          <button class="btn btn-sm text-danger" (click)="delCert(c.id)"><i class="bi bi-trash"></i></button>
+        <!-- Certificaciones -->
+        <div class="section-card position-relative mt-3">
+          <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('cert')"><i class="bi bi-plus-lg"></i></button>
+          <h5><i class="bi bi-patch-check me-1"></i> Certificaciones</h5>
+          @for (c of d.certificaciones; track c.id) {
+            <div class="d-flex justify-content-between align-items-start border-bottom py-2">
+              <div><strong>{{ c.nombre }}</strong><br><small class="text-muted">{{ c.institucion }} {{ c.fechaEmision }}</small></div>
+              <button class="btn btn-sm text-danger" (click)="delCert(c.id)"><i class="bi bi-trash"></i></button>
+            </div>
+          }
+          @if (d.certificaciones.length === 0) { <p class="text-muted small">Sin certificaciones.</p> }
         </div>
-      }
-      @if (d.certificaciones.length === 0) { <p class="text-muted small">Sin certificaciones.</p> }
-    </div>
 
-    <!-- HABILIDADES -->
-    <div class="section-card position-relative">
-      <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('hab')"><i class="bi bi-plus-lg"></i></button>
-      <h5><i class="bi bi-stars me-1"></i> Habilidades</h5>
-      <div class="d-flex flex-wrap gap-1">
-        @for (h of d.habilidades; track h.id) {
-          <span class="tag">{{ h.nombre }} <i class="bi bi-x" style="cursor:pointer" (click)="delHab(h.id)"></i></span>
-        }
-        @if (d.habilidades.length === 0) { <span class="text-muted small">Sin habilidades.</span> }
+        <!-- Habilidades -->
+        <div class="section-card position-relative mt-3">
+          <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('hab')"><i class="bi bi-plus-lg"></i></button>
+          <h5><i class="bi bi-stars me-1"></i> Habilidades</h5>
+          <div class="d-flex flex-wrap gap-1">
+            @for (h of d.habilidades; track h.id) {
+              <span class="tag">{{ h.nombre }} <i class="bi bi-x" style="cursor:pointer" (click)="delHab(h.id)"></i></span>
+            }
+            @if (d.habilidades.length === 0) { <span class="text-muted small">Sin habilidades.</span> }
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN 8 -->
+      <div class="col-md-8">
+        <!-- Experiencia -->
+        <div class="section-card position-relative">
+          <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('exp')"><i class="bi bi-plus-lg"></i></button>
+          <h5><i class="bi bi-briefcase me-1"></i> Experiencia</h5>
+          @for (e of d.experiencias; track e.id) {
+            <div class="d-flex justify-content-between align-items-start border-bottom py-2">
+              <div><strong>{{ e.cargo }}</strong> en {{ e.empresa }}<br><small class="text-muted">{{ e.fechaInicio }} - {{ e.actualmente ? 'Actualidad' : e.fechaFin }}</small></div>
+              <button class="btn btn-sm text-danger" (click)="delExp(e.id)"><i class="bi bi-trash"></i></button>
+            </div>
+          }
+          @if (d.experiencias.length === 0) { <p class="text-muted small">Sin experiencia registrada.</p> }
+        </div>
+
+        <!-- Educación -->
+        <div class="section-card position-relative mt-3">
+          <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2 edit-btn" (click)="openEdit('edu')"><i class="bi bi-plus-lg"></i></button>
+          <h5><i class="bi bi-mortarboard me-1"></i> Educación</h5>
+          @for (e of d.educaciones; track e.id) {
+            <div class="d-flex justify-content-between align-items-start border-bottom py-2">
+              <div><strong>{{ e.titulo }}</strong><br><small class="text-muted">{{ e.institucion }}</small></div>
+              <button class="btn btn-sm text-danger" (click)="delEdu(e.id)"><i class="bi bi-trash"></i></button>
+            </div>
+          }
+          @if (d.educaciones.length === 0) { <p class="text-muted small">Sin educación registrada.</p> }
+        </div>
       </div>
     </div>
   }

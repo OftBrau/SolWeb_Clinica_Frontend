@@ -1,19 +1,26 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-rafa-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PageHeaderComponent],
   template: `
-    <div style="max-width:800px;margin:0 auto">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Reporte RAFA</h2>
+    <div style="max-width:1320px;margin:0 auto">
+      <app-page-header
+        title="Reporte RAFA"
+        subtitle="Reporte de Actividades Formativas y Académicas"
+        icon="bi-file-earmark-bar-graph"
+        [breadcrumbs]="[
+          { label: 'Inicio', link: '/app' },
+          { label: 'Reporte RAFA' }
+        ]">
         <button class="btn btn-primary" (click)="descargarPDF()" [disabled]="descargando()">
           <i class="bi bi-download me-1"></i>{{ descargando() ? 'Generando...' : 'Descargar PDF' }}
         </button>
-      </div>
+      </app-page-header>
 
       @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
       @if (data()) { @let d = data();
