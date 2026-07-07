@@ -83,28 +83,27 @@
           {{ t('servicios.subtitle') }}
         </p>
       </div>
-      <!-- Flechas desktop -->
-      <div class="d-none d-md-flex gap-2">
-        <button
-          class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
-          style="width: 40px; height: 40px"
-          (click)="servicioScrollPrev()"
-        >
-          <i class="bi bi-arrow-left" style="font-size: 0.9rem"></i>
-        </button>
-        <button
-          class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
-          style="width: 40px; height: 40px"
-          (click)="servicioScrollNext()"
-        >
-          <i class="bi bi-arrow-right" style="font-size: 0.9rem"></i>
-        </button>
-      </div>
+
     </div>
   </div>
 
   <!-- Carrusel full-width -->
   <div class="servicios-track-wrapper">
+    <!-- Flechas sobre imágenes -->
+    <button
+      class="servicio-arrow servicio-arrow--prev"
+      (click)="servicioScrollPrev()"
+      aria-label="Anterior"
+    >
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button
+      class="servicio-arrow servicio-arrow--next"
+      (click)="servicioScrollNext()"
+      aria-label="Siguiente"
+    >
+      <i class="bi bi-chevron-right"></i>
+    </button>
     <div
       class="servicios-track"
       [style.transform]="'translateX(calc(-' + servicioIndex() + ' * 340px))'"
@@ -151,6 +150,107 @@
     </div>
   </div>
 </section>
+
+<!-- CARRUSEL DE PRODUCTOS -->
+@if (productosCarousel().length > 0) {
+<section class="product-carousel-section">
+  <div class="product-carousel-inner">
+    <div class="product-carousel-track">
+      @for (item of productosCarousel(); track $index) {
+        @if (item.type === 'single') {
+          <div class="product-carousel-col col-single">
+            <div class="product-img-wrap">
+              <div class="product-flip-inner">
+                <div class="product-flip-front">
+                  @if (item.products[0].fotoUrl) {
+                    <img [src]="item.products[0].fotoUrl" [alt]="item.products[0].nombreComercial" />
+                  } @else {
+                    <div class="product-carousel-placeholder">
+                      <i class="bi bi-box"></i>
+                    </div>
+                  }
+                </div>
+                <div class="product-flip-back">
+                  <h6>{{ item.products[0].nombreComercial }}</h6>
+                  <p>{{ item.products[0].descripcion || item.products[0].nombreGenerico || item.products[0].categoria }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="product-carousel-col col-double">
+            @for (p of item.products; track $index) {
+              <div class="product-img-wrap">
+                <div class="product-flip-inner">
+                  <div class="product-flip-front">
+                    @if (p.fotoUrl) {
+                      <img [src]="p.fotoUrl" [alt]="p.nombreComercial" />
+                    } @else {
+                      <div class="product-carousel-placeholder">
+                        <i class="bi bi-box"></i>
+                      </div>
+                    }
+                  </div>
+                  <div class="product-flip-back">
+                    <h6>{{ p.nombreComercial }}</h6>
+                    <p>{{ p.descripcion || p.nombreGenerico || p.categoria }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+      <!-- Duplicado para loop infinito -->
+      @for (item of productosCarousel(); track $index) {
+        @if (item.type === 'single') {
+          <div class="product-carousel-col col-single">
+            <div class="product-img-wrap">
+              <div class="product-flip-inner">
+                <div class="product-flip-front">
+                  @if (item.products[0].fotoUrl) {
+                    <img [src]="item.products[0].fotoUrl" [alt]="item.products[0].nombreComercial" />
+                  } @else {
+                    <div class="product-carousel-placeholder">
+                      <i class="bi bi-box"></i>
+                    </div>
+                  }
+                </div>
+                <div class="product-flip-back">
+                  <h6>{{ item.products[0].nombreComercial }}</h6>
+                  <p>{{ item.products[0].descripcion || item.products[0].nombreGenerico || item.products[0].categoria }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="product-carousel-col col-double">
+            @for (p of item.products; track $index) {
+              <div class="product-img-wrap">
+                <div class="product-flip-inner">
+                  <div class="product-flip-front">
+                    @if (p.fotoUrl) {
+                      <img [src]="p.fotoUrl" [alt]="p.nombreComercial" />
+                    } @else {
+                      <div class="product-carousel-placeholder">
+                        <i class="bi bi-box"></i>
+                      </div>
+                    }
+                  </div>
+                  <div class="product-flip-back">
+                    <h6>{{ p.nombreComercial }}</h6>
+                    <p>{{ p.descripcion || p.nombreGenerico || p.categoria }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>
+}
 
 <!-- PRODUCTOS DESTACADOS -->
 @if (productosDestacados().length > 0) {

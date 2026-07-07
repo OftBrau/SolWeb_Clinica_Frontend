@@ -560,22 +560,54 @@ section[id] {
 
 /* ── Carrusel Servicios ─────────────────────────── */
 .servicios-track-wrapper {
-  padding-left: max(1rem, calc(50vw - 600px));
+  position: relative;
+  padding-left: max(1rem, calc(50vw - 660px));
   overflow: hidden;
+}
+
+.servicio-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.85);
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background .2s ease, transform .2s ease;
+}
+
+.servicio-arrow:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.servicio-arrow--prev {
+  left: 1rem;
+}
+
+.servicio-arrow--next {
+  right: 1rem;
 }
 
 .servicios-track {
   display: flex;
   gap: 20px;
-  transition: transform .45s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
 }
 
 .servicio-card {
   flex: 0 0 320px;
   border-radius: 16px;
   overflow: hidden;
-  transition: transform .3s ease, opacity .3s ease;
   opacity: .6;
   transform: scale(.96);
 }
@@ -671,6 +703,147 @@ section[id] {
   opacity: 1;
   width: 24px;
   border-radius: 4px;
+}
+
+/* ── Carrusel productos ─────────────────────────── */
+.product-carousel-section {
+  overflow: hidden;
+  padding: 2rem 0;
+  background: var(--bg-body);
+}
+
+.product-carousel-inner {
+  overflow: hidden;
+}
+
+.product-carousel-track {
+  display: inline-flex;
+  gap: 12px;
+  animation: productScroll 30s linear infinite;
+}
+
+.product-carousel-col {
+  flex-shrink: 0;
+  width: 260px;
+  border-radius: 12px;
+}
+
+.product-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
+}
+
+.product-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.45s ease;
+  transform-style: preserve-3d;
+}
+
+.product-img-wrap:hover .product-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.product-flip-front,
+.product-flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.product-flip-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #185FA5, #0d4a7a);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.product-flip-back h6 {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.product-flip-back p {
+  font-size: 0.73rem;
+  opacity: 0.85;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.product-flip-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.03) 0%,
+    rgba(15,60,130,0.35) 50%,
+    rgba(4,44,83,0.75) 100%
+  );
+  pointer-events: none;
+}
+
+.col-single {
+  height: 340px;
+}
+
+.col-single .product-img-wrap {
+  height: 100%;
+}
+
+.col-single img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.col-double {
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.col-double .product-img-wrap {
+  height: calc(50% - 6px);
+}
+
+.col-double img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-carousel-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #6b7280);
+  font-size: 2rem;
+}
+
+@keyframes productScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.product-carousel-section:hover .product-carousel-track {
+  animation-play-state: paused;
 }
 
 /* ── Agendar Cita ──────────────────────────────── */
@@ -903,6 +1076,10 @@ section[id] {
 
 [data-theme="dark"] .circ-btn {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .product-carousel-col img {
+  filter: brightness(0.65) contrast(1.15);
 }
 
 /* ── Inline style replacements ─────────────────── */

@@ -99,7 +99,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.startServicioInterval();
   }
   private startServicioInterval() {
-    this.servicioInterval = setInterval(() => this.servicioScrollNext(), 4000);
+    this.servicioInterval = setInterval(() => this.servicioScrollNext(), 7500);
   }
 
   // ── Formulario de cita ──
@@ -124,6 +124,25 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   cargandoDoctores = signal(false);
 
   productosDestacados = signal<any[]>([]);
+
+  productosCarousel = computed(() => {
+    const prods = this.productosDestacados();
+    if (prods.length === 0) return [];
+    const items: { type: 'single' | 'double'; products: any[] }[] = [];
+    let idx = 0;
+    while (idx < prods.length) {
+      if (items.length % 2 === 0) {
+        items.push({ type: 'single', products: [prods[idx]] });
+        idx++;
+      } else {
+        const remaining = prods.length - idx;
+        const count = remaining >= 2 ? 2 : remaining;
+        items.push({ type: 'double', products: prods.slice(idx, idx + count) });
+        idx += count;
+      }
+    }
+    return items;
+  });
 
   // doctoresDisponibles ahora usa los datos reales del backend
   doctoresDisponibles = computed(() => this.doctoresReales());
