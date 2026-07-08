@@ -41,6 +41,8 @@ export class TopbarComponent {
       PRACTICANTE: 'Practicante',
       PACIENTE: 'Paciente',
       PATIENT: 'Paciente',
+      ASISTENTE: 'Asistente',
+      ENFERMERO: 'Enfermero',
     };
     const r = this.authService.getRol() ?? '';
     return roles[r] || r;

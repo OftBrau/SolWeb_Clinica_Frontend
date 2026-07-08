@@ -1,4 +1,7 @@
-<app-page-header title="Doctores" subtitle="Gestión de doctores y configuración de especialidades"></app-page-header>
+<div class="content-wrapper">
+
+<app-page-header title="Doctores" subtitle="Gestión de doctores y configuración de especialidades"
+  [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Doctores'}]"></app-page-header>
 
 <div class="toolbar">
   <button class="btn btn-primary" (click)="abrirCrear()">+ Crear Doctor</button>
@@ -24,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (doctor of doctores(); track doctor.idDoctor) {
+        @for (doctor of doctoresPaginados(); track doctor.idDoctor) {
           <tr>
             <td>{{ doctor.nombre }} {{ doctor.apellido }}</td>
             <td>{{ doctor.email }}</td>
@@ -67,6 +70,9 @@
       </tbody>
     </table>
   </div>
+
+  <app-pagination [page]="doctorPage()" [totalPages]="totalPages()"
+    [totalItems]="doctores().length" (pageChange)="doctorPage.set($event)"></app-pagination>
 }
 
 @if (!loading() && !doctores().length && !error()) {
@@ -132,3 +138,5 @@
     </div>
   </div>
 }
+
+</div>

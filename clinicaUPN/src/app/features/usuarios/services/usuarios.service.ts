@@ -19,6 +19,7 @@ export interface CrearUsuarioRequest {
   email: string;
   telefono?: string;
   rol: string;
+  password?: string;
 }
 
 export interface EditarUsuarioRequest {

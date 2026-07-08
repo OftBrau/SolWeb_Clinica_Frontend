@@ -1,4 +1,10 @@
-<div class="page-container">
+<div class="content-wrapper">
+
+  <app-page-header title="Pacientes" subtitle="Gestión de pacientes y atención"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Pacientes'}]">
+  </app-page-header>
+
+  <div class="page-container">
 
   <app-lista></app-lista>
 
@@ -100,3 +106,5 @@
     </div>
   </div>
 }
+
+</div>

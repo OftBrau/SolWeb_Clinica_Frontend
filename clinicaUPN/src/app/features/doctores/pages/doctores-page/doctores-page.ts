@@ -1,13 +1,14 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination';
 import { DoctoresService, Doctor, CrearDoctorData, ActualizarDoctorData, EspecialidadDTO } from '../../services/doctores.service';
 
 @Component({
   selector: 'app-doctores-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, PaginationComponent],
   templateUrl: './doctores-page.html',
   styleUrl: './doctores-page.css',
 })
@@ -17,6 +18,13 @@ export class DoctoresPageComponent implements OnInit {
   doctores = signal<Doctor[]>([]);
   loading = signal(true);
   error = signal('');
+  doctorPage = signal(0);
+  pageSize = 10;
+  totalPages = computed(() => Math.ceil(this.doctores().length / this.pageSize));
+  doctoresPaginados = computed(() => {
+    const s = this.doctorPage() * this.pageSize;
+    return this.doctores().slice(s, s + this.pageSize);
+  });
 
   doctorEditando = signal<Doctor | null>(null);
   especialidadEditando = signal('');
@@ -26,6 +34,8 @@ export class DoctoresPageComponent implements OnInit {
   modalTitle = signal('');
   guardando = signal(false);
   especialidadesDisponibles = signal<EspecialidadDTO[]>([]);
+  especialidadCostoEditando = signal<number | null>(null);
+  costoInput = signal<number>(0);
   fotoSeleccionada = signal<File | null>(null);
   fotoPreview = signal<string | null>(null);
   formDoctor = signal<CrearDoctorData & { id?: number }>({
@@ -38,6 +48,7 @@ export class DoctoresPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDoctores();
+    this.cargarEspecialidadesModal();
   }
 
   cargarDoctores(): void {
@@ -217,4 +228,26 @@ export class DoctoresPageComponent implements OnInit {
       },
     });
   }
+
+  editarCostoEsp(esp: EspecialidadDTO): void {
+    this.especialidadCostoEditando.set(esp.idEspecialidad);
+    this.costoInput.set(esp.costoExtra || 0);
+  }
+
+  cancelarCostoEsp(): void {
+    this.especialidadCostoEditando.set(null);
+  }
+
+  guardarCostoEsp(esp: EspecialidadDTO): void {
+    this.doctoresService.actualizarCostoEspecialidad(
+      esp.idEspecialidad, esp.nombre, '', this.costoInput()
+    ).subscribe({
+      next: () => {
+        this.especialidadCostoEditando.set(null);
+        this.cargarEspecialidadesModal();
+      },
+      error: () => this.error.set('Error al actualizar costo')
+    });
+  }
+
 }

@@ -1,5 +1,6 @@
-<div style="max-width:1100px;margin:0 auto">
-  <app-page-header title="Buscar Practicantes" subtitle="Encuentra talento según habilidades y perfil">
+<div class="content-wrapper">
+  <app-page-header title="Buscar Practicantes" subtitle="Encuentra talento según habilidades y perfil"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Perfil Profesional'},{label:'Practicantes'}]">
     <input class="form-control" style="max-width:300px" placeholder="Filtrar por nombre, universidad, skills..." [ngModel]="filtro()" (ngModelChange)="filtro.set($event)">
   </app-page-header>
 

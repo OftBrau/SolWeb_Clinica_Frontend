@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
@@ -13,10 +13,25 @@ import { ThemeService } from '../../../core/services/theme.service';
 })
 export class SidebarComponent {
 
+  isCollapsed = signal(false);
+  mobileOpen = signal(false);
+
   constructor(
     private authService: AuthService,
     protected themeService: ThemeService,
   ) {}
+
+  toggleSidebar(): void {
+    this.isCollapsed.update(v => !v);
+  }
+
+  toggleMobile(): void {
+    this.mobileOpen.update(v => !v);
+  }
+
+  closeMobile(): void {
+    this.mobileOpen.set(false);
+  }
 
   // ──────────────────────────────────────────
   // Datos del usuario
@@ -44,6 +59,9 @@ export class SidebarComponent {
       DIRECTOR: 'Director',
       PRACTICANTE: 'Practicante',
       PACIENTE: 'Paciente',
+      ASISTENTE: 'Asistente',
+      ENFERMERO: 'Enfermero',
+      MEDICO: 'Medico',
     };
     return labels[this.rolUsuario] || this.rolUsuario;
   }
@@ -65,6 +83,8 @@ export class SidebarComponent {
   get esPracticante(): boolean    { return this.rolUsuario === 'PRACTICANTE'; }
   get esPaciente(): boolean       { return this.rolUsuario === 'PACIENTE'; }
   get esAdministrativo(): boolean { return this.rolUsuario === 'ADMINISTRATIVO'; }
+  get esAsistente(): boolean      { return this.rolUsuario === 'ASISTENTE'; }
+  get esEnfermero(): boolean      { return this.rolUsuario === 'ENFERMERO'; }
 
   get verFarmacia(): boolean {
     return this.esPaciente || this.esAdmin || this.esAdministrativo;
@@ -103,9 +123,9 @@ export class SidebarComponent {
     return this.esDirector || this.esAdmin;
   }
 
-  /** Pacientes: admin, doctor, administrativo, director */
+  /** Pacientes: admin, doctor, administrativo, director, enfermero */
   get verPacientes(): boolean {
-    return this.esAdmin || this.esDoctor || this.esAdministrativo || this.esDirector;
+    return this.esAdmin || this.esDoctor || this.esAdministrativo || this.esDirector || this.esEnfermero;
   }
 
   /** Mi Horario: solo doctor */
@@ -128,14 +148,18 @@ export class SidebarComponent {
     return this.esPaciente;
   }
 
+  get verMisPagos(): boolean {
+    return this.esPaciente;
+  }
+
   /** Citas: admin, doctor, administrativo */
   get verCitas(): boolean {
     return this.esAdmin || this.esDoctor || this.esAdministrativo;
   }
 
-  /** Mi Perfil: solo paciente */
+  /** Mi Perfil: solo paciente o enfermero */
   get verMiPerfil(): boolean {
-    return this.esPaciente;
+    return this.esPaciente || this.esEnfermero;
   }
 
   /** Mi Historia Clínica: solo paciente */
@@ -200,6 +224,26 @@ export class SidebarComponent {
 
   /** Usuarios: solo admin */
   get verUsuarios(): boolean {
+    return this.esAdmin;
+  }
+
+  get verAsistente(): boolean {
+    return this.esAsistente;
+  }
+
+  get verEnfermero(): boolean {
+    return this.esEnfermero;
+  }
+
+  get verAdminEnfermeros(): boolean {
+    return this.esAdmin;
+  }
+
+  get verAdminAsistentes(): boolean {
+    return this.esAdmin;
+  }
+
+  get verAdminEspecialidades(): boolean {
     return this.esAdmin;
   }
 

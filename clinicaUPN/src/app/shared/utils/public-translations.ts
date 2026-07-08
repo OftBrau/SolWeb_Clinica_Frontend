@@ -37,8 +37,6 @@ export const PUBLIC_TRANSLATIONS: Record<string, Record<Lang, string>> = {
   'agenda.searchTitle':     { es: 'Buscar mis datos',         en: 'Find my data' },
   'agenda.emailLabel':      { es: 'Correo electrónico',       en: 'Email' },
   'agenda.emailPlaceholder':{ es: 'correo@ejemplo.com',       en: 'email@example.com' },
-  'agenda.codeLabel':       { es: 'Código de estudiante',     en: 'Student code' },
-  'agenda.codePlaceholder': { es: 'Ej: U12345678',            en: 'E.g. U12345678' },
   'agenda.searchBtn':       { es: 'Buscar mis datos',         en: 'Find my data' },
   'agenda.searching':       { es: 'Buscando...',              en: 'Searching...' },
   'agenda.registerTitle':   { es: 'Registrar mis datos',      en: 'Register my data' },
@@ -70,7 +68,8 @@ export const PUBLIC_TRANSLATIONS: Record<string, Record<Lang, string>> = {
   'agenda.booking':         { es: 'Agendando...',             en: 'Booking...' },
   'agenda.completeAll':     { es: 'Completa todos los datos personales', en: 'Complete all personal data' },
   'agenda.completeAppt':    { es: 'Completa todos los campos de la cita', en: 'Complete all appointment fields' },
-  'agenda.searchError':     { es: 'Ingresa tu correo y código de estudiante', en: 'Enter your email and student code' },
+  'agenda.searchErrorEmail':{ es: 'Ingresa tu correo electrónico', en: 'Enter your email' },
+  'agenda.searchError':     { es: 'Ingresa tu correo electrónico', en: 'Enter your email' },
 
   /* ── Nosotros ──────────────────────────────── */
   'about.badge':            { es: 'Universidad Privada del Norte', en: 'Universidad Privada del Norte' },
@@ -164,6 +163,6 @@ export const PUBLIC_TRANSLATIONS: Record<string, Record<Lang, string>> = {
 
   /* ── Errors ──────────────────────────────────── */
   'err.doctorsLoad':    { es: 'No se pudieron cargar los doctores. Intenta de nuevo.', en: 'Could not load doctors. Please try again.' },
-  'err.notFound':       { es: 'No encontramos tus datos. Verifica el correo y código.', en: 'We could not find your data. Check your email and code.' },
+  'err.notFound':       { es: 'No encontramos tus datos. Verifica el correo.', en: 'We could not find your data. Check your email.' },
   'err.booking':        { es: 'Error al agendar la cita. Intenta de nuevo.', en: 'Error booking the appointment. Please try again.' },
 };

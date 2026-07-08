@@ -61,9 +61,14 @@ export interface AppointmentDTO {
   date: string;
   startTime: string;
   endTime: string;
-  status: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED';
+  status: string;
   notes?: string;
   createdAt: string;
+  tipoReserva?: string;
+  montoExtra?: number;
+  tipo?: string;
+  motivo?: string;
+  idEspecialidad?: number;
 }
 
 export interface BookAppointmentRequest {

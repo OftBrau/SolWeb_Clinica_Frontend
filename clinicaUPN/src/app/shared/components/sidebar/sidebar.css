@@ -8,15 +8,102 @@
   flex-direction: column;
   width: 220px;
   min-width: 220px;
-  height: 100vh;
+  max-height: 100vh;
   background: var(--bg-sidebar);
   border-right: 1.5px solid var(--border-color);
   padding: 0;
   position: fixed;
   top: 0;
   left: 0;
-  transition: var(--body-transition);
+  bottom: 0;
   z-index: 1000;
+  overflow: hidden;
+  transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--accent);
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: -1;
+}
+
+/* Collapsed state */
+.sidebar.collapsed {
+  width: 60px;
+  min-width: 60px;
+}
+
+.sidebar.collapsed .brand-name,
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-link span,
+.sidebar.collapsed .toggle-left span,
+.sidebar.collapsed .footer-btn span {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-brand,
+.sidebar.collapsed .sidebar-user,
+.sidebar.collapsed .nav-link,
+.sidebar.collapsed .footer-btn,
+.sidebar.collapsed .theme-toggle-sidebar {
+  justify-content: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+/* Responsive: mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar.mobile-open .sidebar-overlay {
+    display: block;
+  }
+
+  .sidebar-toggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .sidebar-toggle {
+    display: flex;
+  }
 }
 
 /* ---- Brand ---- */
@@ -97,8 +184,10 @@
 /* ---- Nav ---- */
 .sidebar-nav {
   padding: 16px 10px 0;
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 .nav-label {
@@ -149,11 +238,6 @@
   height: 17px;
   flex-shrink: 0;
   stroke: currentColor;
-}
-
-/* ---- Spacer ---- */
-.sidebar-spacer {
-  flex: 1;
 }
 
 /* ---- Footer ---- */

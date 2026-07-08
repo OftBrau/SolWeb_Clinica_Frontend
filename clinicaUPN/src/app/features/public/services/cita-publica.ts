@@ -65,10 +65,9 @@ export class CitaPublicaService {
   private readonly base = 'http://localhost:8080/api/cita-publica';
 
   // ── 1. Buscar paciente ──
-  buscarPaciente(email: string, codigo: string): Observable<PacienteResponse> {
+  buscarPaciente(email: string): Observable<PacienteResponse> {
     const params = new HttpParams()
-      .set('email', email)
-      .set('codigo', codigo);
+      .set('email', email);
 
     return this.http
       .get<ApiResponse<PacienteResponse>>(`${this.base}/buscar-paciente`, { params })

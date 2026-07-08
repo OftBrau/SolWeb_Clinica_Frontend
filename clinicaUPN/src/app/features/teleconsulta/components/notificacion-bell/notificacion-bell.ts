@@ -41,6 +41,15 @@ export class NotificacionBellComponent {
       this.router.navigate(['/app/mi-historia']);
     } else if (tipo === 'INVITACION_PRACTICA' || tipo === 'INVITACION_ACEPTADA' || tipo === 'INVITACION_RECHAZADA') {
       this.router.navigate(['/app/invitaciones']);
+    } else if (tipo === 'NUEVA_CITA_ESPECIALISTA' || tipo === 'CITA_ASIGNADA' || tipo === 'CITA_RECHAZADA') {
+      const rol = this.auth.getRol();
+      if (rol === 'ASISTENTE') {
+        this.router.navigate(['/app/asistente/pendientes']);
+      } else {
+        this.router.navigate(['/app/mis-citas']);
+      }
+    } else if (tipo === 'TAREA_ASIGNADA') {
+      this.router.navigate(['/app/mis-tareas']);
     } else {
       this.router.navigate(['/app/teleconsulta']);
     }

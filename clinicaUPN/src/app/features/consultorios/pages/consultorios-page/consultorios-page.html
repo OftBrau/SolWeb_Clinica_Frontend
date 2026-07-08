@@ -1,5 +1,6 @@
-<div class="page-wrapper">
-  <app-page-header title="Consultorios" subtitle="Gestión de consultorios y asignaciones"></app-page-header>
+<div class="page-wrapper content-wrapper">
+  <app-page-header title="Consultorios" subtitle="Gestión de consultorios y asignaciones"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Consultorios'}]"></app-page-header>
 
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item"><a class="nav-link" [class.active]="tab()==='crud'" (click)="tab.set('crud')">Consultorios</a></li>

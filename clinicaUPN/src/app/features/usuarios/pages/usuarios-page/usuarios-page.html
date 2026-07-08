@@ -1,8 +1,14 @@
-<div class="usuarios-container">
+<div class="usuarios-container content-wrapper">
 
-  <app-page-header title="Usuarios" subtitle="Administración de usuarios y asignación de roles">
+   <app-page-header title="Usuarios" subtitle="Administración de usuarios y asignación de roles"
+     [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Usuarios'}]">
     <button class="btn btn-primary" (click)="abrirModalCrear()">+ Crear usuario</button>
   </app-page-header>
+
+  <div *ngIf="exitoMsg()" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ exitoMsg() }}
+    <button class="btn-close" (click)="exitoMsg.set('')"></button>
+  </div>
 
   <div *ngIf="loading()" class="loading">Cargando usuarios...</div>
   @if (error(); as errMsg) {
@@ -56,13 +62,8 @@
     <div class="empty">No hay usuarios registrados.</div>
   }
 
-  @if (!loading() && totalPages() > 1) {
-    <div class="pagination-bar">
-      <button [disabled]="page() === 0" (click)="irPagina(page() - 1)">Anterior</button>
-      <span>Página {{ page() + 1 }} de {{ totalPages() }} ({{ totalElements() }} usuarios)</span>
-      <button [disabled]="page() >= totalPages() - 1" (click)="irPagina(page() + 1)">Siguiente</button>
-    </div>
-  }
+  <app-pagination [page]="page()" [totalPages]="totalPages()"
+    [totalItems]="totalElements()" (pageChange)="irPagina($event)"></app-pagination>
 
   @if (mostrarModalCrear()) {
     <div class="modal-overlay" (click)="cerrarModalCrear()">
@@ -101,6 +102,29 @@
                 <option [value]="r">{{ r }}</option>
               }
             </select>
+          </div>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="crear-auto-password" [ngModel]="formAutoPassword()" (ngModelChange)="onAutoPasswordChange($event)" />
+            <label class="form-check-label small" for="crear-auto-password">Generar contraseña aleatoria y enviar por correo</label>
+          </div>
+
+          <div class="form-group" *ngIf="!formAutoPassword()">
+            <label for="crear-password">Contraseña</label>
+            <div class="input-group">
+              <input id="crear-password" type="text" class="form-control" [(ngModel)]="formPassword" placeholder="Ingrese o genere una contraseña" />
+              <button class="btn btn-outline-secondary btn-sm" type="button" (click)="generarPasswordAleatoria()" title="Generar aleatoria">
+                <i class="bi bi-shuffle"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-muted small mb-2" *ngIf="formAutoPassword()">
+            <i class="bi bi-info-circle me-1"></i>Se generara una contraseña temporal y se enviara al correo del usuario.
+          </div>
+
+          <div class="text-muted small mb-2" *ngIf="!formAutoPassword()">
+            <i class="bi bi-info-circle me-1"></i>La contraseña se enviara al correo del usuario. No se marcara como temporal.
           </div>
         </div>
 

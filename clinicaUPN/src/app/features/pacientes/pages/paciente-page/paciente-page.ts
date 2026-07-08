@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ListaComponent } from '../../components/lista/lista';
 import { DetalleComponent } from '../../components/detalle/detalle';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { panelAbierto, crearCitaAbierto, cerrarCrearCita, pacientes } from '../../signals/pacientes.signals';
 import { CitaPublicaService, DoctorDisponible, AgendarRequest } from '../../../public/services/cita-publica';
 
 @Component({
   selector: 'app-paciente-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ListaComponent, DetalleComponent],
+  imports: [CommonModule, FormsModule, ListaComponent, DetalleComponent, PageHeaderComponent],
   templateUrl: './paciente-page.html',
   styleUrl: './paciente-page.css',
 })

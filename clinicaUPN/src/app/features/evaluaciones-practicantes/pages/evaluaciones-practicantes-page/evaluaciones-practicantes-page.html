@@ -1,5 +1,6 @@
-<div class="page-wrapper">
-  <app-page-header title="Evaluaciones" subtitle="Reporte de evaluaciones de practicantes"></app-page-header>
+<div class="page-wrapper content-wrapper">
+  <app-page-header title="Evaluaciones" subtitle="Reporte de evaluaciones de practicantes"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Evaluaciones'}]"></app-page-header>
 
   @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
 

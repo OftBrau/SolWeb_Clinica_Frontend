@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 export interface EspecialidadDTO {
   idEspecialidad: number;
   nombre: string;
+  costoExtra: number;
 }
 
 export interface Doctor {
@@ -87,5 +88,11 @@ export class DoctoresService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<void>(`${this.API}/${id}/foto`, formData);
+  }
+
+  actualizarCostoEspecialidad(id: number, nombre: string, descripcion: string, costoExtra: number): Observable<void> {
+    return this.http.put<void>(`http://localhost:8080/api/admin/especialidades/${id}`, {
+      nombre, descripcion, costoExtra, estado: 'ACTIVO'
+    });
   }
 }

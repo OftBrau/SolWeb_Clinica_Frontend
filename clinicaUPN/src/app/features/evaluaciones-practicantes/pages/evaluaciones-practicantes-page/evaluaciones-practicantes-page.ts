@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, PageHeaderComponent, FormsModule],
   templateUrl: './evaluaciones-practicantes-page.html',
   styles: [`
-    .page-wrapper { max-width: 1000px; margin: 0 auto; }
     .card-eval { transition: transform .15s; }
     .card-eval:hover { transform: translateY(-2px); }
   `]

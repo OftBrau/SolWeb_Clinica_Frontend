@@ -125,28 +125,7 @@
       </table>
     </div>
 
-    <!-- Paginación -->
-    @if (totalPaginas() > 1) {
-      <div class="pagination">
-        <button class="btn-page" [disabled]="paginaActual() === 0" (click)="onPrevPage()">
-          <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
-            <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        @for (page of getPages(); track page) {
-          <button
-            class="btn-page"
-            [class.active]="page === paginaActual()"
-            (click)="onGoToPage(page)"
-          >{{ page + 1 }}</button>
-        }
-        <button class="btn-page" [disabled]="paginaActual() >= totalPaginas() - 1" (click)="onNextPage()">
-          <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
-            <path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <span class="pagination-info">Página {{ paginaActual() + 1 }} de {{ totalPaginas() }}</span>
-      </div>
-    }
+    <app-pagination [page]="paginaActual()" [totalPages]="totalPaginas()"
+      [totalItems]="totalElementos()" (pageChange)="onGoToPage($event)"></app-pagination>
   }
 </div>

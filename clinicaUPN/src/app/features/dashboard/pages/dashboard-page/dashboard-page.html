@@ -1,5 +1,6 @@
-<div class="dashboard-container">
-  <app-page-header title="Dashboard" subtitle="Panel de control general">
+<div class="dashboard-container content-wrapper">
+  <app-page-header title="Dashboard" subtitle="Panel de control general"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Dashboard'}]">
     <button class="btn-refresh" (click)="cargarReporte()">
       <i data-lucide="activity" style="width:16px;height:16px"></i>
       Actualizar

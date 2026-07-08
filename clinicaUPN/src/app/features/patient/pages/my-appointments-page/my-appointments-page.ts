@@ -1,5 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { NgFor, NgIf, DatePipe, UpperCasePipe } from '@angular/common';
+import { NgFor, NgIf, NgSwitch, NgSwitchCase, DatePipe, UpperCasePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 import { AppointmentService } from '../../../../core/services/appointment.service';
 import { AppointmentDTO } from '../../../../core/models/scheduling.models';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -8,72 +11,87 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 @Component({
   selector: 'app-my-appointments-page',
   standalone: true,
-  imports: [NgFor, NgIf, DatePipe, UpperCasePipe, ConfirmDialogComponent, PageHeaderComponent],
+  imports: [NgFor, NgIf, NgSwitch, NgSwitchCase, DatePipe, UpperCasePipe, FormsModule, RouterLink, ConfirmDialogComponent, PageHeaderComponent],
   template: `
-    <div class="container py-4 cita-container">
-      <app-page-header
-        title="Mis Citas"
-        subtitle="Gestiona tus citas médicas programadas"
-        icon="bi-calendar-check"
-        [breadcrumbs]="[
-          { label: 'Inicio', link: '/app' },
-          { label: 'Mis Citas' }
-        ]">
-      </app-page-header>
+    <div class="content-wrapper">
 
-      <ul class="nav nav-tabs cita-tabs">
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab()==='upcoming'"
-             (click)="activeTab.set('upcoming');load()">
-            <i class="bi bi-calendar-event me-1"></i> Próximas
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab()==='past'"
-             (click)="activeTab.set('past');load()">
-            <i class="bi bi-clock-history me-1"></i> Pasadas
-          </a>
-        </li>
-      </ul>
+    <app-page-header title="Mis Citas" subtitle="Gestiona tus citas medicas programadas" icon="bi-calendar-check"
+      [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Mis Citas'}]">
+      <a routerLink="/" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Agendar cita
+      </a>
+    </app-page-header>
 
-      <div *ngIf="appointments().length===0" class="cita-empty">
-        <i class="bi bi-inbox"></i>
-        <p>No tienes citas {{ activeTab()==='upcoming' ? 'próximas' : 'pasadas' }}</p>
-      </div>
+    <div class="d-flex gap-2 mb-3">
+      <select class="form-select form-select-sm" style="max-width:200px" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event); filtrar()">
+        <option value="activas">Citas activas</option>
+        <option value="pendientes_pago">Pendientes de pago</option>
+        <option value="proximas">Proximas</option>
+        <option value="pasadas">Pasadas</option>
+        <option value="todas">Todas</option>
+      </select>
+    </div>
 
-      <div class="cita-timeline">
-        <div *ngFor="let apt of appointments()" class="cita-card"
-             [class.cita-past]="!isActive(apt.status)">
-          <div class="cita-date-badge" [class]="dateBadgeClass(apt.date)">
-            <span class="cita-date-day">{{ apt.date | date:'dd' }}</span>
-            <span class="cita-date-month">{{ apt.date | date:'MMM' | uppercase }}</span>
-          </div>
+    <div *ngIf="appointments().length===0" class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-1 d-block mb-2" style="opacity:.4"></i>
+      <p>No tienes citas que mostrar</p>
+    </div>
 
-          <div class="cita-body">
-            <div class="cita-info">
-              <div class="cita-doctor">
-                <div class="cita-avatar">
-                  {{ apt.doctorName.charAt(0) }}
+    <div class="d-flex flex-column gap-3">
+      <div *ngFor="let apt of appointments()" class="card border shadow-sm"
+           [class.opacity-50]="!isActive(apt.status)">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div class="d-flex gap-3 align-items-start">
+              <div class="text-center rounded-3 px-3 py-2" style="min-width:60px;background:#e3f2fd;color:#1565c0" [class.bg-secondary]="dateBadgeClass(apt.date)==='past'" [class.text-white]="dateBadgeClass(apt.date)==='today'" [class.bg-primary]="dateBadgeClass(apt.date)==='today'">
+                <strong class="d-block" style="font-size:1.3rem;line-height:1">{{ apt.date | date:'dd' }}</strong>
+                <small style="font-size:.7rem">{{ apt.date | date:'MMM' | uppercase }}</small>
+              </div>
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0"
+                       style="width:32px;height:32px;background:var(--bs-primary);font-size:14px">
+                    {{ apt.doctorName ? apt.doctorName.charAt(0) : '?' }}
+                  </div>
+                  <strong>{{ apt.doctorName || 'Pendiente de asignacion' }}</strong>
                 </div>
-                <div>
-                  <span class="cita-doctor-name">Dr(a). {{ apt.doctorName }}</span>
-                  <span class="cita-time">
-                    <i class="bi bi-clock"></i> {{ apt.startTime }} – {{ apt.endTime }}
+                <div class="text-muted small">
+                  <i class="bi bi-clock me-1"></i>{{ apt.startTime }} – {{ apt.endTime }}
+                  <span class="ms-2" *ngIf="apt.tipoReserva">
+                    <span [class]="apt.tipoReserva === 'ESPECIALISTA' ? 'badge bg-warning' : 'badge bg-info'">
+                      {{ apt.tipoReserva === 'ESPECIALISTA' ? 'Especialista' : 'Basica' }}
+                    </span>
+                  </span>
+                  <span class="ms-1" *ngIf="apt.tipo">
+                    <span class="badge bg-light text-dark">{{ apt.tipo }}</span>
                   </span>
                 </div>
-              </div>
-              <div class="cita-meta">
-                <span class="cita-day-label">{{ diasRestantes(apt.date) }}</span>
-                <span class="cita-status" [class]="'cita-status--'+apt.status.toLowerCase()">
-                  <span class="cita-status-dot"></span>
-                  {{ statusLabel(apt.status) }}
-                </span>
+                <div class="d-flex gap-2 align-items-center mt-1 flex-wrap">
+                  <span class="badge rounded-pill" [class]="statusClass(apt.status)">{{ statusLabel(apt.status) }}</span>
+                  <span class="small text-muted">{{ diasRestantes(apt.date) }}</span>
+                  <span class="small" *ngIf="apt.motivo" style="color:var(--text-secondary)">
+                    <i class="bi bi-chat-left-text me-1"></i>{{ apt.motivo }}
+                  </span>
+                </div>
+                <div class="mt-1" *ngIf="apt.tipoReserva === 'ESPECIALISTA' && apt.montoExtra">
+                  <span class="badge bg-success" *ngIf="pagosAprobados()[apt.id]">Pagado S/ {{ apt.montoExtra }}</span>
+                  <span class="badge bg-danger" *ngIf="!pagosAprobados()[apt.id] && !cargandoPago()[apt.id]">
+                    Pendiente pago S/ {{ apt.montoExtra }}
+                    <button class="btn btn-sm btn-outline-success ms-1 py-0 px-1" (click)="pagarCita(apt)">Pagar</button>
+                  </span>
+                  <span class="spinner-border spinner-border-sm" *ngIf="cargandoPago()[apt.id]"></span>
+                </div>
               </div>
             </div>
-
-            <div *ngIf="isActive(apt.status)" class="cita-actions">
-              <button class="btn-cancel" (click)="confirmCancel(apt)">
-                <i class="bi bi-x-circle"></i> Cancelar
+            <div class="d-flex gap-1 flex-wrap" *ngIf="isActive(apt.status)">
+              <button class="btn btn-sm btn-outline-primary" (click)="verDetalle(apt)" title="Ver detalle">
+                <i class="bi bi-info-circle"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="abrirReprogramar(apt)" title="Reprogramar">
+                <i class="bi bi-arrow-repeat"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="confirmCancel(apt)" title="Cancelar">
+                <i class="bi bi-x-circle"></i>
               </button>
             </div>
           </div>
@@ -81,356 +99,178 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
       </div>
     </div>
 
-    <app-confirm-dialog *ngIf="appointmentToCancel" title="Cancelar cita"
-      [message]="'¿Cancelar cita con '+appointmentToCancel.doctorName+' el '+(appointmentToCancel.date|date:'dd/MM/yyyy')+' a las '+appointmentToCancel.startTime+'?'"
-      (confirmed)="cancelAppointment()" (cancelled)="appointmentToCancel=null"></app-confirm-dialog>
-
-    <div *ngIf="error" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
-      <div class="toast show text-bg-danger">
-        <div class="d-flex">
-          <div class="toast-body">{{ error }}</div>
-          <button class="btn-close btn-close-white me-2 m-auto" (click)="error=''"></button>
+    <!-- Modal Reprogramar -->
+    <div class="modal d-block" *ngIf="modalReprogramar()" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Reprogramar cita</h5>
+            <button class="btn-close" (click)="cerrarReprogramar()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nueva fecha</label>
+              <input type="date" class="form-control" [ngModel]="nuevaFecha" [min]="today" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nueva hora</label>
+              <select class="form-select" [ngModel]="nuevaHora">
+                <option value="">Seleccionar</option>
+                <option *ngFor="let h of slotsHora" [value]="h">{{ h }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="cerrarReprogramar()">Cancelar</button>
+            <button class="btn btn-primary" (click)="reprogramarCita()" [disabled]="!nuevaFecha() || !nuevaHora() || reprogramando()">
+              {{ reprogramando() ? 'Reprogramando...' : 'Reprogramar' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Modal Detalle -->
+    @if (modalDetalle()) {
+      <div class="modal d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalle de cita #{{ modalDetalle()!.id }}</h5>
+            <button class="btn-close" (click)="modalDetalle.set(null)"></button>
+          </div>
+          <div class="modal-body">
+            <dl class="row small mb-0">
+              <dt class="col-5">Estado</dt><dd class="col-7"><span class="badge" [class]="statusClass(modalDetalle()!.status)">{{ statusLabel(modalDetalle()!.status) }}</span></dd>
+              <dt class="col-5">Tipo reserva</dt><dd class="col-7">{{ modalDetalle()!.tipoReserva || '—' }}</dd>
+              <dt class="col-5">Modalidad</dt><dd class="col-7">{{ modalDetalle()!.tipo || 'PRESENCIAL' }}</dd>
+              <dt class="col-5">Doctor</dt><dd class="col-7">{{ modalDetalle()!.doctorName || 'Sin asignar' }}</dd>
+              <dt class="col-5">Fecha</dt><dd class="col-7">{{ modalDetalle()!.date | date:'dd/MM/yyyy' }}</dd>
+              <dt class="col-5">Hora</dt><dd class="col-7">{{ modalDetalle()!.startTime }} – {{ modalDetalle()!.endTime }}</dd>
+              <dt class="col-5">Motivo</dt><dd class="col-7">{{ modalDetalle()!.motivo || '—' }}</dd>
+              <dt class="col-5">Costo extra</dt><dd class="col-7">S/ {{ modalDetalle()!.montoExtra || '0.00' }}</dd>
+              <dt class="col-5">Pago</dt><dd class="col-7">{{ pagosAprobados()[modalDetalle()!.id] ? 'Pagado' : 'Pendiente' }}</dd>
+            </dl>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="modalDetalle.set(null)">Cerrar</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    }
+
+    <app-confirm-dialog *ngIf="appointmentToCancel" title="Cancelar cita"
+      [message]="'Cancelar cita con '+appointmentToCancel.doctorName+' el '+(appointmentToCancel.date|date:'dd/MM/yyyy')+' a las '+appointmentToCancel.startTime+'?'"
+      (confirmed)="cancelAppointment()" (cancelled)="appointmentToCancel=null"></app-confirm-dialog>
+
+    <div *ngIf="error" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+      <div class="toast show text-bg-danger"><div class="d-flex">
+        <div class="toast-body">{{ error }}</div>
+        <button class="btn-close btn-close-white me-2 m-auto" (click)="error=''"></button>
+      </div></div>
+    </div>
+
+    </div>
   `,
   styles: [`
-    .cita-container {
-      max-width: 1320px;
-    }
-
-    .cita-tabs {
-      margin-bottom: 28px;
-      border-bottom: 2px solid var(--bs-border-color, #e0e0e0);
-    }
-
-    .cita-tabs .nav-link {
-      border: none;
-      color: var(--bs-secondary-color, #888);
-      font-weight: 500;
-      font-size: 14px;
-      padding: 10px 20px;
-      border-radius: 0;
-      transition: all 0.2s;
-    }
-
-    .cita-tabs .nav-link:hover {
-      color: var(--bs-primary, #1976d2);
-      border-bottom: 2px solid var(--bs-primary, #1976d2);
-      margin-bottom: -2px;
-      background: transparent;
-    }
-
-    .cita-tabs .nav-link.active {
-      color: var(--bs-primary, #1976d2);
-      background: transparent;
-      border-bottom: 2px solid var(--bs-primary, #1976d2);
-      margin-bottom: -2px;
-      font-weight: 600;
-    }
-
-    .cita-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--bs-secondary-color, #999);
-    }
-
-    .cita-empty i {
-      font-size: 48px;
-      display: block;
-      margin-bottom: 12px;
-      opacity: 0.4;
-    }
-
-    .cita-empty p {
-      font-size: 15px;
-      margin: 0;
-    }
-
-    .cita-timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .cita-card {
-      display: flex;
-      gap: 16px;
-      background: var(--bs-body-bg, #fff);
-      border: 1px solid var(--bs-border-color, #e8e8e8);
-      border-radius: 14px;
-      padding: 16px;
-      transition: box-shadow 0.2s, transform 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cita-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--bs-primary, #1976d2);
-      border-radius: 0 4px 4px 0;
-    }
-
-    .cita-card.cita-past::before {
-      background: var(--bs-secondary-color, #bbb);
-    }
-
-    .cita-card:hover {
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      transform: translateY(-1px);
-    }
-
-    .cita-date-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      background: #e3f2fd;
-      color: #1565c0;
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .cita-date-badge.cita-badge-today {
-      background: #1976d2;
-      color: #fff;
-    }
-
-    .cita-date-badge.cita-badge-past {
-      background: #f5f5f5;
-      color: #999;
-    }
-
-    .cita-date-day {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .cita-date-month {
-      font-size: 11px;
-      letter-spacing: 0.5px;
-      margin-top: 2px;
-    }
-
-    .cita-body {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .cita-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .cita-doctor {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .cita-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--bs-primary, #1976d2);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .cita-card.cita-past .cita-avatar {
-      background: #9e9e9e;
-    }
-
-    .cita-doctor-name {
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--bs-body-color, #222);
-      display: block;
-    }
-
-    .cita-time {
-      font-size: 13px;
-      color: var(--bs-secondary-color, #777);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .cita-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .cita-day-label {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    .cita-card.cita-past .cita-day-label {
-      background: #f5f5f5;
-      color: #999;
-    }
-
-    .cita-status {
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 20px;
-    }
-
-    .cita-status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .cita-status--scheduled,
-    .cita-status--confirmada {
-      background: #e3f2fd;
-      color: #1565c0;
-    }
-
-    .cita-status--scheduled .cita-status-dot,
-    .cita-status--confirmada .cita-status-dot {
-      background: #1565c0;
-    }
-
-    .cita-status--completed,
-    .cita-status--atendida {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    .cita-status--completed .cita-status-dot,
-    .cita-status--atendida .cita-status-dot {
-      background: #2e7d32;
-    }
-
-    .cita-status--cancelled,
-    .cita-status--cancelada {
-      background: #ffebee;
-      color: #c62828;
-    }
-
-    .cita-status--cancelled .cita-status-dot,
-    .cita-status--cancelada .cita-status-dot {
-      background: #c62828;
-    }
-
-    .cita-actions {
-      display: flex;
-      gap: 6px;
-      flex-shrink: 0;
-      align-items: center;
-    }
-
-    .btn-cancel {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 14px;
-      border: 1px solid #ffcdd2;
-      border-radius: 8px;
-      background: transparent;
-      color: #c62828;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .btn-cancel:hover {
-      background: #ffebee;
-      border-color: #ef9a9a;
-    }
-
-    @media (max-width: 576px) {
-      .cita-body {
-        flex-direction: column;
-      }
-
-      .cita-actions {
-        width: 100%;
-      }
-
-      .btn-cancel {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .cita-date-badge {
-        min-width: 50px;
-        height: 50px;
-        border-radius: 10px;
-      }
-
-      .cita-date-day {
-        font-size: 17px;
-      }
-    }
+    @media (max-width:576px) { .card-body { padding: 12px; } }
   `]
 })
 export class MyAppointmentsPageComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
-  activeTab = signal<'upcoming'|'past'>('upcoming');
+  private http = inject(HttpClient);
+  private api = 'http://localhost:8080/api';
+
+  filtroEstado = signal<string>('activas');
   appointments = signal<AppointmentDTO[]>([]);
+  allAppointments: AppointmentDTO[] = [];
   appointmentToCancel: AppointmentDTO|null = null;
   error = '';
+  modalDetalle = signal<AppointmentDTO|null>(null);
+  modalReprogramar = signal(false);
+  citaReprogramar = signal<AppointmentDTO|null>(null);
+  nuevaFecha = signal('');
+  nuevaHora = signal('');
+  reprogramando = signal(false);
+  pagosAprobados = signal<Record<number,boolean>>({});
+  pagosCargados = signal(false);
+  cargandoPago = signal<Record<number,boolean>>({});
+  today = new Date().toISOString().split('T')[0];
+  slotsHora = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30'];
 
   ngOnInit() { this.load(); }
 
   load() {
-    const today = new Date().toISOString().split('T')[0];
     this.appointmentService.getPatientAppointments('').subscribe({
       next: data => {
-        if (this.activeTab() === 'upcoming')
-          this.appointments.set(data.filter(a => a.date >= today && this.isActive(a.status)));
-        else
-          this.appointments.set(data.filter(a => a.date < today || !this.isActive(a.status)));
+        this.allAppointments = data;
+        this.filtrar();
+        this.cargarEstadosPago(data);
       }
     });
   }
 
-  isActive(s: string): boolean { return s === 'SCHEDULED' || s === 'CONFIRMADA'; }
+  filtrar() {
+    const today = new Date().toISOString().split('T')[0];
+    const f = this.filtroEstado();
+    let list = [...this.allAppointments];
+
+    if (f === 'activas') {
+      list = list.filter(a => this.isActive(a.status));
+    } else if (f === 'pendientes_pago') {
+      list = list.filter(a => a.tipoReserva === 'ESPECIALISTA' && a.montoExtra
+        && !this.pagosAprobados()[a.id] && a.status !== 'CANCELADA');
+    } else if (f === 'proximas') {
+      list = list.filter(a => a.date >= today && this.isActive(a.status));
+    } else if (f === 'pasadas') {
+      list = list.filter(a => a.date < today || !this.isActive(a.status));
+    }
+    this.appointments.set(list);
+  }
+
+  cargarEstadosPago(data: AppointmentDTO[]) {
+    const esp = data.filter(a => a.tipoReserva === 'ESPECIALISTA' && a.montoExtra);
+    if (esp.length === 0) {
+      this.pagosCargados.set(true);
+      return;
+    }
+    let loaded = 0;
+    esp.forEach(a => {
+      this.http.get<{ data: { estadoPago: string } }>(`${this.api}/pagos/citas/cita/${a.id}`).subscribe({
+        next: r => {
+          const aprobado = r.data?.estadoPago === 'APROBADO';
+          this.pagosAprobados.update(m => ({ ...m, [a.id]: aprobado }));
+          loaded++;
+          if (loaded === esp.length) this.pagosCargados.set(true);
+        },
+        error: () => {
+          loaded++;
+          if (loaded === esp.length) this.pagosCargados.set(true);
+        }
+      });
+    });
+  }
+
+  isActive(s: string): boolean {
+    return s === 'SCHEDULED' || s === 'CONFIRMADA' || s === 'PENDIENTE_ASIGNACION';
+  }
 
   statusLabel(s: string): string {
-    const m: Record<string,string> = { SCHEDULED:'Programada', CONFIRMADA:'Confirmada',
-      COMPLETED:'Completada', ATENDIDA:'Atendida', CANCELLED:'Cancelada', CANCELADA:'Cancelada' };
+    const m: Record<string,string> = {
+      SCHEDULED:'Programada', CONFIRMADA:'Confirmada', PENDIENTE_ASIGNACION:'Pendiente asignacion',
+      COMPLETED:'Completada', ATENDIDA:'Atendida', EN_ATENCION:'En atencion',
+      CANCELLED:'Cancelada', CANCELADA:'Cancelada', NO_ASISTIO:'No asistio'
+    };
     return m[s] || s;
   }
 
-  statusBadge(s: string): string {
+  statusClass(s: string): string {
     if (s==='SCHEDULED'||s==='CONFIRMADA') return 'bg-primary';
+    if (s==='PENDIENTE_ASIGNACION') return 'bg-warning text-dark';
     if (s==='COMPLETED'||s==='ATENDIDA') return 'bg-success';
-    if (s==='CANCELLED'||s==='CANCELADA') return 'bg-danger';
+    if (s==='CANCELLED'||s==='CANCELADA'||s==='NO_ASISTIO') return 'bg-danger';
+    if (s==='EN_ATENCION') return 'bg-info';
     return 'bg-secondary';
   }
 
@@ -441,17 +281,19 @@ export class MyAppointmentsPageComponent implements OnInit {
     if (diff < 0) return 'Pasada';
     if (diff === 0) return 'Hoy';
     if (diff === 1) return 'Mañana';
-    return `en ${diff} días`;
+    return `en ${diff} dias`;
   }
 
   dateBadgeClass(date: string): string {
     const hoy = new Date(); hoy.setHours(0,0,0,0);
     const cita = new Date(date + 'T00:00:00');
     const diff = Math.ceil((cita.getTime() - hoy.getTime()) / 86400000);
-    if (diff < 0) return 'cita-badge-past';
-    if (diff === 0) return 'cita-badge-today';
+    if (diff < 0) return 'past';
+    if (diff === 0) return 'today';
     return '';
   }
+
+  verDetalle(apt: AppointmentDTO) { this.modalDetalle.set(apt); }
 
   confirmCancel(apt: AppointmentDTO) { this.appointmentToCancel = apt; }
   cancelAppointment() {
@@ -459,6 +301,43 @@ export class MyAppointmentsPageComponent implements OnInit {
     this.appointmentService.cancelPatientAppointment(this.appointmentToCancel.id).subscribe({
       next: () => { this.appointmentToCancel = null; this.load(); },
       error: err => { this.error = err.error?.message||'Error al cancelar'; this.appointmentToCancel = null; }
+    });
+  }
+
+  abrirReprogramar(apt: AppointmentDTO) {
+    this.citaReprogramar.set(apt);
+    this.nuevaFecha.set(apt.date);
+    this.nuevaHora.set('');
+    this.modalReprogramar.set(true);
+  }
+
+  cerrarReprogramar() { this.modalReprogramar.set(false); this.citaReprogramar.set(null); }
+
+  reprogramarCita() {
+    const cita = this.citaReprogramar();
+    if (!cita || !this.nuevaFecha() || !this.nuevaHora()) return;
+    this.reprogramando.set(true);
+    this.http.put(`http://localhost:8080/api/citas/${cita.id}/reprogramar`, {
+      fecha: this.nuevaFecha(), hora: this.nuevaHora()
+    }).subscribe({
+      next: () => { this.reprogramando.set(false); this.cerrarReprogramar(); this.load(); },
+      error: err => { this.reprogramando.set(false); this.error = err.error?.message||'Error al reprogramar'; }
+    });
+  }
+
+  pagarCita(apt: AppointmentDTO) {
+    this.cargandoPago.update(m => ({ ...m, [apt.id]: true }));
+    this.http.post<{ data: { urlPago: string } }>(`${this.api}/pagos/citas/crear`, {
+      idCita: apt.id, monto: apt.montoExtra, metodoPago: 'MERCADOPAGO'
+    }).subscribe({
+      next: r => {
+        this.cargandoPago.update(m => ({ ...m, [apt.id]: false }));
+        if (r.data?.urlPago) window.location.href = r.data.urlPago;
+      },
+      error: () => {
+        this.cargandoPago.update(m => ({ ...m, [apt.id]: false }));
+        this.error = 'Error al crear el pago';
+      }
     });
   }
 }

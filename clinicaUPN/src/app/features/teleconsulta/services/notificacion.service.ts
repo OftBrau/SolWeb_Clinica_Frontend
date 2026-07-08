@@ -62,6 +62,11 @@ export class NotificacionService implements OnDestroy {
             this.agregar(JSON.parse(msg.body));
           });
         }
+        if (rol === 'ASISTENTE') {
+          this.stompClient!.subscribe('/topic/notificaciones/asistente', (msg) => {
+            this.agregar(JSON.parse(msg.body));
+          });
+        }
         // Todos se suscriben a sus notificaciones personales
         this.stompClient!.subscribe(`/topic/notificaciones/paciente/${user.email}`, (msg) => {
           this.agregar(JSON.parse(msg.body));

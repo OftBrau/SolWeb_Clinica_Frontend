@@ -1,5 +1,6 @@
-<div class="max-w">
-  <app-page-header title="Reportes" subtitle="Reportes y estadísticas operativas">
+<div class="content-wrapper">
+  <app-page-header title="Reportes" subtitle="Reportes y estadísticas operativas"
+    [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Reportes'}]">
     <div class="d-flex gap-2 align-items-center">
       <input type="date" class="form-control form-control-sm" style="width:160px" [ngModel]="fecha()" (ngModelChange)="fecha.set($event); cargar()">
       <button class="btn btn-sm btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>

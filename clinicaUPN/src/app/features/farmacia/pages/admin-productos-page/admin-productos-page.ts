@@ -2,12 +2,13 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination';
 import { FarmaciaService, MedicamentoDTO } from '../../services/farmacia.service';
 
 @Component({
   selector: 'app-admin-productos-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, PaginationComponent],
   templateUrl: './admin-productos-page.html',
   styleUrl: './admin-productos-page.css'
 })

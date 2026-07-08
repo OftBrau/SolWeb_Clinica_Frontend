@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination';
 import { FarmaciaService, ReclamacionDTO } from '../../services/farmacia.service';
 
 @Component({
   selector: 'app-reclamaciones-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './reclamaciones-admin-page.html',
   styleUrl: './reclamaciones-admin-page.css'
 })
@@ -38,6 +39,8 @@ export class ReclamacionesAdminPageComponent {
       error: () => this.cargando.set(false)
     });
   }
+
+  irPagina(p: number): void { this.cargar(p); }
 
   verDetalle(r: ReclamacionDTO) {
     this.selected.set(r);

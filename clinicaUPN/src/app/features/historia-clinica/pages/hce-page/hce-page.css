@@ -1,8 +1,3 @@
-.hce-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .empty-state {
   text-align: center;
   padding: 2.5rem;
@@ -13,23 +8,4 @@
 .empty-icon {
   font-size: 2.5rem;
   color: var(--text-muted);
-}
-
-.doc-tipo {
-  font-size: .7rem;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  white-space: nowrap;
-}
-
-.table th {
-  font-weight: 600;
-  font-size: .85rem;
-}
-
-.table td {
-  font-size: .88rem;
 }

@@ -38,6 +38,21 @@ export const routes: Routes = [
         path: 'checkout',
         loadComponent: () => import('./features/farmacia/pages/checkout-page/checkout-page')
           .then(m => m.CheckoutPageComponent)
+      },
+      {
+        path: 'cita-pago-exitoso',
+        loadComponent: () => import('./features/public/pages/pago-cita/pago-cita')
+          .then(m => m.PagoCitaPageComponent)
+      },
+      {
+        path: 'cita-pago-fallido',
+        loadComponent: () => import('./features/public/pages/pago-cita/pago-cita')
+          .then(m => m.PagoCitaPageComponent)
+      },
+      {
+        path: 'cita-pago-pendiente',
+        loadComponent: () => import('./features/public/pages/pago-cita/pago-cita')
+          .then(m => m.PagoCitaPageComponent)
       }
     ]
   },
@@ -65,6 +80,8 @@ export const routes: Routes = [
             DIRECTOR:       'dashboard',
             PACIENTE:       'doctors',
             PATIENT:        'doctors',
+            ASISTENTE:      'asistente/pendientes',
+            ENFERMERO:      'enfermero/agenda',
           };
           return router.parseUrl(rutas[rol ?? ''] || 'pacientes');
         }],
@@ -82,17 +99,28 @@ export const routes: Routes = [
       { path: 'reportes',         loadChildren: () => import('./features/reportes/reportes.routes').then(m => m.REPORTES_ROUTES) },
       { path: 'practicantes',     loadChildren: () => import('./features/practicantes/practicantes.routes').then(m => m.PRACTICANTES_ROUTES) },
       { path: 'mis-citas',        loadComponent: () => import('./features/patient/pages/my-appointments-page/my-appointments-page').then(m => m.MyAppointmentsPageComponent) },
+      { path: 'mis-pagos',        loadComponent: () => import('./features/pacientes/pages/mis-pagos-page/mis-pagos-page').then(m => m.MisPagosPageComponent) },
       { path: 'mi-perfil',        loadComponent: () => import('./features/pacientes/pages/mi-perfil-page/mi-perfil-page').then(m => m.MiPerfilPageComponent) },
+      { path: 'historial-pagos',  loadComponent: () => import('./features/pacientes/pages/historial-pagos-page/historial-pagos-page').then(m => m.HistorialPagosPageComponent) },
       { path: 'mi-historia',      loadComponent: () => import('./features/historia-clinica/pages/hce-paciente-page/hce-paciente-page').then(m => m.HcePacientePageComponent) },
+      { path: 'mis-pagos',        loadComponent: () => import('./features/pacientes/pages/mis-pagos-page/mis-pagos-page').then(m => m.MisPagosPageComponent) },
       { path: 'dashboard',        canActivate: [roleGuard(['ADMINISTRADOR', 'DIRECTOR'])], loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES) },
       { path: 'consultorios',     canActivate: [roleGuard(['ADMINISTRADOR', 'ADMINISTRATIVO'])], loadChildren: () => import('./features/consultorios/consultorios.routes').then(m => m.CONSULTORIOS_ROUTES) },
       { path: 'doctores',         canActivate: [roleGuard(['ADMINISTRADOR', 'DIRECTOR'])], loadChildren: () => import('./features/doctores/doctores.routes').then(m => m.DOCTORES_ROUTES) },
       { path: 'evaluaciones-practicantes', canActivate: [roleGuard(['ADMINISTRADOR', 'DOCTOR', 'DIRECTOR'])], loadChildren: () => import('./features/evaluaciones-practicantes/evaluaciones-practicantes.routes').then(m => m.EVALUACIONES_PRACTICANTES_ROUTES) },
       { path: 'usuarios',         canActivate: [roleGuard(['ADMINISTRADOR'])], loadChildren: () => import('./features/usuarios/usuarios.routes').then(m => m.USUARIOS_ROUTES) },
+      { path: 'enfermeros',       canActivate: [roleGuard(['ADMINISTRADOR'])], loadComponent: () => import('./features/enfermeros/pages/admin-enfermeros-page/admin-enfermeros-page').then(m => m.AdminEnfermerosPageComponent) },
+      { path: 'asistentes',       canActivate: [roleGuard(['ADMINISTRADOR'])], loadComponent: () => import('./features/asistentes/pages/admin-asistentes-page/admin-asistentes-page').then(m => m.AdminAsistentesPageComponent) },
+      { path: 'especialidades',   canActivate: [roleGuard(['ADMINISTRADOR'])], loadComponent: () => import('./features/especialidades/pages/admin-especialidades-page/admin-especialidades-page').then(m => m.AdminEspecialidadesPageComponent) },
       { path: 'mi-horario',       canActivate: [roleGuard(['DOCTOR', 'MEDICO'])], loadComponent: () => import('./features/doctor/pages/mi-horario-page/mi-horario-page').then(m => m.MiHorarioPageComponent) },
       { path: 'mi-agenda',        canActivate: [roleGuard(['DOCTOR', 'MEDICO'])], loadComponent: () => import('./features/doctor/pages/mi-agenda-page/mi-agenda-page').then(m => m.MiAgendaPageComponent) },
       { path: 'doctors',          canActivate: [roleGuard(['PACIENTE', 'PATIENT'])], loadComponent: () => import('./features/patient/pages/doctor-list-page/doctor-list-page').then(m => m.DoctorListPageComponent) },
       { path: 'booking/:doctorId', canActivate: [roleGuard(['PACIENTE', 'PATIENT'])], loadComponent: () => import('./features/patient/pages/booking-page/booking-page').then(m => m.BookingPageComponent) },
+      { path: 'asistente/pendientes', canActivate: [roleGuard(['ASISTENTE'])], loadComponent: () => import('./features/asistente/pages/pendientes-page/pendientes-page').then(m => m.PendientesPageComponent) },
+      { path: 'asistente/agenda',     canActivate: [roleGuard(['ASISTENTE'])], loadComponent: () => import('./features/asistente/pages/agenda-page/agenda-page').then(m => m.AgendaPageComponent) },
+      { path: 'enfermero/agenda',     canActivate: [roleGuard(['ENFERMERO'])], loadComponent: () => import('./features/enfermero/pages/agenda-page/agenda-page').then(m => m.EnfermeroAgendaPageComponent) },
+      { path: 'enfermero/triaje/:idCita', canActivate: [roleGuard(['ENFERMERO'])], loadComponent: () => import('./features/enfermero/pages/triaje-page/triaje-page').then(m => m.TriajePageComponent) },
+      { path: 'enfermero/historial/:idPaciente', canActivate: [roleGuard(['ENFERMERO'])], loadComponent: () => import('./features/historia-clinica/pages/hce-page/hce-page').then(m => m.HcePageComponent) },
     ]
   },
 

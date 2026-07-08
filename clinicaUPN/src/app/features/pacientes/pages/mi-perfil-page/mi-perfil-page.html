@@ -7,11 +7,6 @@
       { label: 'Inicio', link: '/app' },
       { label: 'Mi Perfil' }
     ]">
-    @if (!editando() && paciente()) {
-      <button class="btn-edit btn-edit-outline" (click)="activarEdicion()">
-        <i class="bi bi-pencil"></i> Editar
-      </button>
-    }
   </app-page-header>
 
   @if (cargando()) {
@@ -44,6 +39,16 @@
           <span class="perfil-hero-email">
             <i class="bi bi-envelope"></i> {{ p.email }}
           </span>
+        </div>
+        <div class="perfil-hero-actions">
+          <button class="btn-edit btn-edit-outline btn-sm" (click)="abrirCambiarPassword()">
+            <i class="bi bi-key"></i> Contraseña
+          </button>
+          @if (!editando()) {
+            <button class="btn-edit btn-edit-outline" (click)="activarEdicion()">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+          }
         </div>
         @if (editando()) {
           <div class="perfil-hero-actions">
@@ -174,4 +179,38 @@
       }
     </div>
   }
+
+  <!-- Modal cambiar contraseña -->
+  <div class="modal d-block" *ngIf="modalPassword()" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar contraseña</h5>
+          <button class="btn-close" (click)="modalPassword.set(false)"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="errorPassword()" class="alert alert-danger py-2 small">{{ errorPassword() }}</div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Contraseña actual</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordActual" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nueva contraseña</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordNueva" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Confirmar nueva contraseña</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordConfirmar" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="modalPassword.set(false)">Cancelar</button>
+          <button class="btn btn-primary" (click)="cambiarPassword()" [disabled]="cambiandoPassword()">
+            {{ cambiandoPassword() ? 'Cambiando...' : 'Cambiar contraseña' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

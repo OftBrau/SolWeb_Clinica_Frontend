@@ -2,12 +2,13 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination';
 import { UsuariosService, Usuario, CrearUsuarioRequest, EditarUsuarioRequest } from '../../services/usuarios.service';
 
 @Component({
   selector: 'app-usuarios-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, PaginationComponent],
   templateUrl: './usuarios-page.html',
   styleUrl: './usuarios-page.css',
 })
@@ -30,6 +31,8 @@ export class UsuariosPageComponent implements OnInit {
     'DIRECTOR',
     'PRACTICANTE',
     'PACIENTE',
+    'ASISTENTE',
+    'ENFERMERO',
   ];
 
   ngOnInit(): void {
@@ -67,6 +70,7 @@ export class UsuariosPageComponent implements OnInit {
 
   mostrarModalCrear = signal(false);
   guardando = signal(false);
+  exitoMsg = signal('');
   errorModal = signal('');
 
   formNombre = signal('');
@@ -74,6 +78,8 @@ export class UsuariosPageComponent implements OnInit {
   formEmail = signal('');
   formTelefono = signal('');
   formRol = signal('');
+  formPassword = signal('');
+  formAutoPassword = signal(true);
 
   abrirModalCrear(): void {
     this.formNombre.set('');
@@ -81,6 +87,8 @@ export class UsuariosPageComponent implements OnInit {
     this.formEmail.set('');
     this.formTelefono.set('');
     this.formRol.set('');
+    this.formPassword.set('');
+    this.formAutoPassword.set(true);
     this.errorModal.set('');
     this.mostrarModalCrear.set(true);
   }
@@ -105,6 +113,10 @@ export class UsuariosPageComponent implements OnInit {
       rol: this.formRol(),
     };
 
+    if (!this.formAutoPassword()) {
+      request.password = this.formPassword();
+    }
+
     this.guardando.set(true);
     this.errorModal.set('');
 
@@ -112,6 +124,8 @@ export class UsuariosPageComponent implements OnInit {
       next: () => {
         this.cerrarModalCrear();
         this.cargarUsuarios();
+        this.exitoMsg.set(`Usuario creado. La contraseña temporal fue enviada a ${this.formEmail()}`);
+        setTimeout(() => this.exitoMsg.set(''), 6000);
       },
       error: (err) => {
         console.error('Error creando usuario:', err);
@@ -119,6 +133,20 @@ export class UsuariosPageComponent implements OnInit {
         this.guardando.set(false);
       },
     });
+  }
+
+  generarPasswordAleatoria(): void {
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    let pass = '';
+    for (let i = 0; i < 10; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.formPassword.set(pass);
+  }
+
+  onAutoPasswordChange(value: boolean): void {
+    this.formAutoPassword.set(value);
+    if (!value) this.formPassword.set('');
   }
 
   // ==========================================

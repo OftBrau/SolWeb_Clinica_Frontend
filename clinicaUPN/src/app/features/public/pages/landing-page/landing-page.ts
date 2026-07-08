@@ -198,7 +198,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   formApellido = signal('');
   formEmail = signal('');
   formTelefono = signal('');
-  formCodigo = signal('');
   formEspecialidad = signal('');
   formMedico = signal('');
   formFecha = signal('');
@@ -207,7 +206,17 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   formError = signal('');
   formFechaNacimiento = signal('');
   formGenero = signal('');
+  formTipoReserva = signal<'BASICA' | 'ESPECIALISTA'>('BASICA');
+  formIdEspecialidad = signal<number | null>(null);
+  formDoctorPreferido = signal<number | null>(null);
+  doctoresPorEspecialidad = signal<DoctorDisponible[]>([]);
   pacienteId: number | null = null;
+
+  citaCreadaId = signal<number | null>(null);
+  citaMontoExtra = signal<number>(0);
+  pagando = signal(false);
+
+  especialidadesActivas = signal<{ idEspecialidad: number; nombre: string; costoExtra: number }[]>([]);
 
   // ── Doctores dinámicos desde el backend ──
   doctoresReales = signal<DoctorDisponible[]>([]);
@@ -331,6 +340,31 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  onEspecialidadChange(): void {
+    this.formDoctorPreferido.set(null);
+    const idEsp = this.formIdEspecialidad();
+    if (!idEsp) {
+      this.doctoresPorEspecialidad.set([]);
+      return;
+    }
+    const esp = this.especialidadesActivas().find(e => e.idEspecialidad === idEsp);
+    if (esp) {
+      this.citaService.listarDoctores(esp.nombre).subscribe({
+        next: (docs) => this.doctoresPorEspecialidad.set(docs),
+        error: () => this.doctoresPorEspecialidad.set([])
+      });
+    }
+  }
+
+  cargarEspecialidadesActivas(): void {
+    this.http.get<{ data: { idEspecialidad: number; nombre: string; costoExtra: number }[] }>(
+      'http://localhost:8080/api/cita-publica/especialidades'
+    ).subscribe({
+      next: (r) => this.especialidadesActivas.set(r.data || []),
+      error: () => {}
+    });
+  }
+
   elegirPacienteExistente() {
     this.paso.set('existente');
     this.formError.set('');
@@ -341,14 +375,14 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   buscarPaciente() {
-    if (!this.formEmail() || !this.formCodigo()) {
-      this.formError.set(this.t('agenda.searchError'));
+    if (!this.formEmail()) {
+      this.formError.set(this.t('agenda.searchErrorEmail'));
       return;
     }
     this.formLoading.set(true);
     this.formError.set('');
 
-    this.citaService.buscarPaciente(this.formEmail(), this.formCodigo()).subscribe({
+    this.citaService.buscarPaciente(this.formEmail()).subscribe({
       next: (paciente) => {
         this.formLoading.set(false);
         this.pacienteId = paciente.idPaciente;
@@ -385,44 +419,115 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   agendarCita() {
-    let medico = this.formMedico();
-    if (this.esAutoAsignar) {
-      const docs = this.doctoresReales();
-      medico = docs.length > 0 ? docs[0].nombre : '';
+    if (this.formTipoReserva() === 'ESPECIALISTA') {
+      this.agendarEspecialista();
+    } else {
+      this.agendarBasica();
     }
-    if (!this.formEspecialidad() || !medico || !this.formFecha() || !this.formHora()) {
-      this.formError.set(this.t('agenda.completeAppt'));
+  }
+
+  agendarBasica() {
+    if (!this.formFecha() || !this.formHora()) {
+      this.formError.set('Selecciona fecha y hora');
       return;
     }
     this.formLoading.set(true);
     this.formError.set('');
 
-    this.citaService
-      .agendar({
-        idPaciente: this.pacienteId ?? undefined,
-        nombre: this.formNombre(),
-        apellido: this.formApellido(),
-        email: this.formEmail(),
-        telefono: this.formTelefono(),
-        fechaNacimiento: this.formFechaNacimiento(),
-        genero: this.formGenero(),
-        especialidad: this.formEspecialidad(),
-        medico: medico,
-        fecha: this.formFecha(),
-        hora: this.formHora(),
-        motivo: 'Consulta general',
-        tipo: 'PRESENCIAL',
-      })
-      .subscribe({
-        next: () => {
+    const body: any = {
+      fecha: this.formFecha(),
+      hora: this.formHora(),
+      motivo: 'Consulta general',
+      tipo: 'PRESENCIAL',
+    };
+
+    this.agregarDatosPaciente(body);
+
+    this.http.post('http://localhost:8080/api/cita-publica/reservar-basica', body).subscribe({
+      next: (resp: any) => {
+        this.paso.set('exito');
+        this.formLoading.set(false);
+        if (resp?.data?.doctor) {
+          this.formMedico.set(resp.data.doctor);
+        }
+      },
+      error: (err) => {
+        this.formLoading.set(false);
+        this.formError.set(err.error?.message || this.t('err.booking'));
+      },
+    });
+  }
+
+  agendarEspecialista() {
+    if (!this.formIdEspecialidad() || !this.formFecha() || !this.formHora()) {
+      this.formError.set('Selecciona especialidad, fecha y hora');
+      return;
+    }
+    this.formLoading.set(true);
+    this.formError.set('');
+
+    const body: any = {
+      idEspecialidad: this.formIdEspecialidad(),
+      fecha: this.formFecha(),
+      hora: this.formHora(),
+      motivo: 'Consulta con especialista',
+      tipo: 'PRESENCIAL',
+    };
+
+    if (this.formDoctorPreferido()) {
+      body.idDoctorPreferido = this.formDoctorPreferido();
+    }
+
+    this.agregarDatosPaciente(body);
+
+    this.http.post('http://localhost:8080/api/cita-publica/reservar-especialista', body).subscribe({
+      next: (resp: any) => {
+        this.formLoading.set(false);
+        if (resp?.data?.idCita) {
+          this.citaCreadaId.set(resp.data.idCita);
+          this.citaMontoExtra.set(resp.data.montoExtra || 0);
           this.paso.set('exito');
-          this.formLoading.set(false);
-        },
-        error: (err) => {
-          this.formLoading.set(false);
-          this.formError.set(err.error?.message || this.t('err.booking'));
-        },
-      });
+        }
+      },
+      error: (err) => {
+        this.formLoading.set(false);
+        this.formError.set(err.error?.message || this.t('err.booking'));
+      },
+    });
+  }
+
+  pagarCita(): void {
+    const idCita = this.citaCreadaId();
+    if (!idCita) return;
+    this.pagando.set(true);
+    this.http.post<{ data: { urlPago: string } }>(
+      'http://localhost:8080/api/pagos/citas/crear',
+      { idCita, monto: this.citaMontoExtra(), metodoPago: 'MERCADOPAGO' }
+    ).subscribe({
+      next: (r) => {
+        this.pagando.set(false);
+        if (r.data?.urlPago) {
+          window.location.href = r.data.urlPago;
+        }
+      },
+      error: () => {
+        this.pagando.set(false);
+        this.formError.set('Error al crear el pago. Intente nuevamente.');
+      }
+    });
+  }
+
+  private agregarDatosPaciente(body: any) {
+    if (this.pacienteId) {
+      body.idPaciente = this.pacienteId;
+    } else {
+      body.nombre = this.formNombre();
+      body.apellido = this.formApellido();
+      body.email = this.formEmail();
+      body.telefono = this.formTelefono();
+      body.fechaNacimiento = this.formFechaNacimiento();
+      body.genero = this.formGenero();
+    }
   }
 
   reiniciarFormulario() {
@@ -432,13 +537,16 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.formApellido.set('');
     this.formEmail.set('');
     this.formTelefono.set('');
-    this.formCodigo.set('');
     this.formEspecialidad.set('');
     this.formMedico.set('');
     this.formFecha.set('');
     this.formHora.set('');
     this.formError.set('');
+    this.formTipoReserva.set('BASICA');
+    this.formIdEspecialidad.set(null);
     this.doctoresReales.set([]);
+    this.citaCreadaId.set(null);
+    this.citaMontoExtra.set(0);
   }
 
   // ── Carrusel de especialidades ──
@@ -458,6 +566,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     import('@splinetool/viewer');
     this.cargarEspecialidades();
     this.cargarProductos();
+    this.cargarEspecialidadesActivas();
     this.interval = setInterval(() => this.goNext(), 5000);
     this.startServicioInterval();
     this.autoFillIfLoggedIn();

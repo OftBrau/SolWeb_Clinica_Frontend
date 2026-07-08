@@ -78,6 +78,7 @@ export class LoginPageComponent {
       ADMINISTRADOR: '/app/pacientes', ADMINISTRATIVO: '/app/pacientes',
       DOCTOR: '/app/citas', MEDICO: '/app/citas', PRACTICANTE: '/app/mis-tareas',
       DIRECTOR: '/app/dashboard', PACIENTE: '/app/mis-citas', PATIENT: '/app/mis-citas',
+      ASISTENTE: '/app/asistente/pendientes', ENFERMERO: '/app/enfermero/agenda',
     };
     this.router.navigate([rutas[r] || '/app']);
   }
