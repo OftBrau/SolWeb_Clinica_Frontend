@@ -1,8 +1,15 @@
 <div class="perfil-container">
-  <app-page-header title="Mi perfil" subtitle="Información personal y de contacto">
+  <app-page-header
+    title="Mi perfil"
+    subtitle="Información personal y de contacto"
+    icon="bi-person-circle"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Mi Perfil' }
+    ]">
     @if (!editando() && paciente()) {
-      <button class="btn btn-outline-primary btn-sm" (click)="activarEdicion()">
-        <i class="bi bi-pencil me-1"></i>Editar
+      <button class="btn-edit btn-edit-outline" (click)="activarEdicion()">
+        <i class="bi bi-pencil"></i> Editar
       </button>
     }
   </app-page-header>
@@ -15,7 +22,10 @@
   }
 
   @if (error() && !cargando()) {
-    <div class="alert alert-danger">{{ error() }}</div>
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ error() }}</span>
+    </div>
   }
 
   @if (exito()) {
@@ -27,111 +37,138 @@
 
   @if (!cargando() && paciente(); as p) {
     <div class="perfil-card">
-      <!-- Avatar -->
-      <div class="perfil-avatar">
+      <div class="perfil-hero">
         <div class="avatar-circle">{{ p.nombre.charAt(0) }}{{ p.apellido.charAt(0) }}</div>
-        <div>
-          <h5 class="fw-bold mb-0">{{ p.nombre }} {{ p.apellido }}</h5>
-          <span class="text-muted small">{{ p.email }}</span>
+        <div class="perfil-hero-info">
+          <h2 class="perfil-hero-name">{{ p.nombre }} {{ p.apellido }}</h2>
+          <span class="perfil-hero-email">
+            <i class="bi bi-envelope"></i> {{ p.email }}
+          </span>
         </div>
+        @if (editando()) {
+          <div class="perfil-hero-actions">
+            <button class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
+            <button class="btn-save" (click)="guardar()" [disabled]="guardando()">
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+            </button>
+          </div>
+        }
       </div>
 
       @if (editando()) {
-        <!-- Formulario edición -->
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Nombre</label>
-            <input type="text" class="form-control" [(ngModel)]="form.nombre" />
+        <div class="perfil-body">
+          <div class="section-title">
+            <i class="bi bi-pencil-square"></i> Editar información
           </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Apellido</label>
-            <input type="text" class="form-control" [(ngModel)]="form.apellido" />
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="form.nombre" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Apellido</label>
+              <input type="text" class="form-control" [(ngModel)]="form.apellido" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="form.email" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" [(ngModel)]="form.telefono" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Fecha de nacimiento</label>
+              <input type="date" class="form-control" [(ngModel)]="form.fechaNacimiento" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Género</label>
+              <select class="form-select" [(ngModel)]="form.genero">
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Código estudiante</label>
+              <input type="text" class="form-control" [(ngModel)]="form.codigoEstudiante" />
+            </div>
+            <div class="form-field">
+              <label class="form-label">Tipo de sangre</label>
+              <select class="form-select" [(ngModel)]="form.tipoSangre">
+                <option value="">No especificado</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label class="form-label">Alergias</label>
+              <textarea class="form-control" rows="2" [(ngModel)]="form.alergias"></textarea>
+            </div>
           </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Email</label>
-            <input type="email" class="form-control" [(ngModel)]="form.email" />
-          </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Teléfono</label>
-            <input type="tel" class="form-control" [(ngModel)]="form.telefono" />
-          </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Fecha de nacimiento</label>
-            <input type="date" class="form-control" [(ngModel)]="form.fechaNacimiento" />
-          </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Género</label>
-            <select class="form-select" [(ngModel)]="form.genero">
-              <option value="M">Masculino</option>
-              <option value="F">Femenino</option>
-              <option value="OTRO">Otro</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Código estudiante</label>
-            <input type="text" class="form-control" [(ngModel)]="form.codigoEstudiante" />
-          </div>
-          <div class="form-field">
-            <label class="form-label small fw-semibold">Tipo de sangre</label>
-            <select class="form-select" [(ngModel)]="form.tipoSangre">
-              <option value="">No especificado</option>
-              <option>A+</option>
-              <option>A-</option>
-              <option>B+</option>
-              <option>B-</option>
-              <option>AB+</option>
-              <option>AB-</option>
-              <option>O+</option>
-              <option>O-</option>
-            </select>
-          </div>
-          <div class="form-field full">
-            <label class="form-label small fw-semibold">Alergias</label>
-            <textarea class="form-control" rows="2" [(ngModel)]="form.alergias"></textarea>
-          </div>
-        </div>
 
-        @if (error()) {
-          <div class="alert alert-danger py-2 small mt-3">{{ error() }}</div>
-        }
+          @if (error()) {
+            <div class="alert alert-danger py-2 small mt-3">{{ error() }}</div>
+          }
 
-        <div class="form-actions mt-3">
-          <button class="btn btn-outline-secondary btn-sm" (click)="cancelarEdicion()">
-            Cancelar
-          </button>
-          <button class="btn btn-primary btn-sm" (click)="guardar()" [disabled]="guardando()">
-            @if (guardando()) {
-              <span class="spinner-border spinner-border-sm me-1"></span>
-            }
-            {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
-          </button>
+          <div class="form-actions">
+            <button class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
+            <button class="btn-save" (click)="guardar()" [disabled]="guardando()">
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+            </button>
+          </div>
         </div>
       } @else {
-        <!-- Vista datos -->
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Teléfono</span>
-            <span class="info-value">{{ p.telefono || '—' }}</span>
+        <div class="perfil-body">
+          <div class="section-title">
+            <i class="bi bi-info-circle"></i> Datos personales
           </div>
-          <div class="info-item">
-            <span class="info-label">Fecha de nacimiento</span>
-            <span class="info-value">{{ p.fechaNacimiento | date: 'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Género</span>
-            <span class="info-value">{{ p.genero }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Código estudiante</span>
-            <span class="info-value">{{ p.codigoEstudiante || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Tipo de sangre</span>
-            <span class="info-value">{{ p.tipoSangre || '—' }}</span>
-          </div>
-          <div class="info-item full">
-            <span class="info-label">Alergias</span>
-            <span class="info-value">{{ p.alergias || 'Ninguna registrada' }}</span>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value" [class.info-value-muted]="!p.telefono">
+                <i class="bi bi-telephone"></i> {{ p.telefono || 'No registrado' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha de nacimiento</span>
+              <span class="info-value">
+                <i class="bi bi-calendar3"></i> {{ p.fechaNacimiento | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Género</span>
+              <span class="info-value">
+                <i class="bi bi-gender-ambiguous"></i>
+                {{ p.genero === 'M' ? 'Masculino' : p.genero === 'F' ? 'Femenino' : p.genero || '—' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Código estudiante</span>
+              <span class="info-value" [class.info-value-muted]="!p.codigoEstudiante">
+                <i class="bi bi-upc"></i> {{ p.codigoEstudiante || 'No registrado' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tipo de sangre</span>
+              <span class="info-value" [class.info-value-muted]="!p.tipoSangre">
+                <i class="bi bi-droplet"></i> {{ p.tipoSangre || 'No especificado' }}
+              </span>
+            </div>
+            <div class="info-item full">
+              <span class="info-label">Alergias</span>
+              <span class="info-value" [class.info-value-muted]="!p.alergias">
+                <i class="bi bi-shield-exclamation"></i> {{ p.alergias || 'Ninguna registrada' }}
+              </span>
+            </div>
           </div>
         </div>
       }

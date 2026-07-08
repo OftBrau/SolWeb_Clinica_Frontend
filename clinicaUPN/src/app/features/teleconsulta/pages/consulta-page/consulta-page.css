@@ -1,4 +1,4 @@
-.tc-container { max-width: 700px; margin: 0 auto; }
+.tc-container { max-width: 1320px; margin: 0 auto; }
 .empty-state { text-align: center; padding: 2rem; background: var(--bg-muted); border-radius: var(--radius-lg); }
 
 .tc-card {

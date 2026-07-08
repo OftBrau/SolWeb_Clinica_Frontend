@@ -1,4 +1,14 @@
-<app-page-header title="Mis Practicantes" subtitle="Gestiona los practicantes asignados a tu supervisión"></app-page-header>
+<div class="mis-prac-wrapper" style="max-width:1320px;margin:0 auto">
+<app-page-header
+  title="Mis Practicantes"
+  subtitle="Gestiona los practicantes asignados a tu supervisión"
+  icon="bi-people"
+  [breadcrumbs]="[
+    { label: 'Inicio', link: '/app' },
+    { label: 'Practicantes' },
+    { label: 'Mis Practicantes' }
+  ]">
+</app-page-header>
 
 @if (successMsg()) {
   <div class="success">{{ successMsg() }}</div>
@@ -173,3 +183,4 @@
     </div>
   </div>
 }
+</div>

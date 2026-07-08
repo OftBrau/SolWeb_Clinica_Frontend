@@ -69,6 +69,9 @@ export interface ReclamacionDTO {
 
 export interface CrearReclamacionRequest {
   nombreCompleto: string;
+  apellidos?: string;
+  dni?: string;
+  direccion?: string;
   email?: string;
   telefono?: string;
   tipo: string;

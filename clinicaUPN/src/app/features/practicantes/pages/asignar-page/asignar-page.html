@@ -1,4 +1,14 @@
-<app-page-header title="Asignar Practicantes" subtitle="Administra qué practicantes están asignados a cada doctor"></app-page-header>
+<div class="asignar-wrapper" style="max-width:1320px;margin:0 auto">
+<app-page-header
+  title="Asignar Practicantes"
+  subtitle="Administra qué practicantes están asignados a cada doctor"
+  icon="bi-person-plus"
+  [breadcrumbs]="[
+    { label: 'Inicio', link: '/app' },
+    { label: 'Practicantes' },
+    { label: 'Asignar' }
+  ]">
+</app-page-header>
 
 @if (successMsg()) {
   <div class="success">{{ successMsg() }}</div>
@@ -87,3 +97,4 @@
     </div>
   </div>
 }
+</div>

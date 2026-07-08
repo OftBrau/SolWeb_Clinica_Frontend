@@ -1,7 +1,13 @@
-<div class="page-wrapper" style="padding-top:100px;padding-left:1rem;padding-right:1rem">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Farmacia</h2>
-  </div>
+<div class="page-wrapper" style="max-width:1320px;margin:0 auto;padding-left:1rem;padding-right:1rem">
+  <app-page-header
+    title="Farmacia"
+    subtitle="Encuentra medicamentos, vitaminas y suplementos"
+    icon="bi-capsule"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Farmacia' }
+    ]">
+  </app-page-header>
 
   <div class="search-bar mb-3">
     <input type="text" class="form-control" placeholder="Buscar producto..."

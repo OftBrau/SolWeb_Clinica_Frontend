@@ -1,5 +1,12 @@
-<div class="evaluaciones-container">
-  <app-page-header title="Mis Evaluaciones">
+<div class="evaluaciones-container" style="max-width:1320px;margin:0 auto">
+  <app-page-header
+    title="Mis Evaluaciones"
+    icon="bi-clipboard-check"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Practicantes' },
+      { label: 'Mis Evaluaciones' }
+    ]">
     <button class="btn btn-outline-primary btn-sm" (click)="cargarEvaluaciones()">
       <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
     </button>

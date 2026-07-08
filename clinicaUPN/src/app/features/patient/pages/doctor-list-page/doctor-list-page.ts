@@ -3,14 +3,23 @@ import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { BookingService } from '../../../../core/services/booking.service';
 import { DoctorSummaryDTO } from '../../../../core/models/scheduling.models';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-doctor-list-page',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, PageHeaderComponent],
   template: `
     <div class="container py-4">
-      <h2 class="mb-4">Selecciona un doctor</h2>
+      <app-page-header
+        title="Selecciona un doctor"
+        subtitle="Elige al especialista y agenda tu cita"
+        icon="bi-calendar2-heart"
+        [breadcrumbs]="[
+          { label: 'Inicio', link: '/app' },
+          { label: 'Doctores' }
+        ]">
+      </app-page-header>
 
       <div class="mb-3">
         <select class="form-select w-auto" (change)="filterBySpecialty($event)">

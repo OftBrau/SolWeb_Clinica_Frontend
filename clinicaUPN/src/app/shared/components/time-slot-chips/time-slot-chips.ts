@@ -8,28 +8,32 @@ import { TimeSlotDTO } from '../../../core/models/scheduling.models';
   imports: [NgFor, NgIf],
   template: `
     <div class="time-slots">
-      <div *ngIf="morningSlots().length > 0" class="mb-3">
-        <h6 class="text-muted mb-2">Mañana</h6>
-        <div class="d-flex flex-wrap gap-2">
+      <div class="slot-group">
+        <div class="slot-group-header">
+          <i class="bi bi-sun-fill"></i> Mañana
+        </div>
+        <div class="slot-group-body">
           <button *ngFor="let slot of morningSlots()"
-                  class="btn btn-sm slot-chip"
+                  class="slot-btn"
                   [class.selected]="selectedSlot?.startTime === slot.startTime"
-                  [class.available]="selectedSlot?.startTime !== slot.startTime"
                   (click)="selectSlot(slot)">
-            {{ formatTime(slot.startTime) }}
+            <span class="slot-time">{{ formatTime(slot.startTime) }}</span>
           </button>
+          <div *ngIf="morningSlots().length === 0" class="slot-empty">Sin horarios</div>
         </div>
       </div>
-      <div *ngIf="afternoonSlots().length > 0">
-        <h6 class="text-muted mb-2">Tarde</h6>
-        <div class="d-flex flex-wrap gap-2">
+      <div class="slot-group">
+        <div class="slot-group-header">
+          <i class="bi bi-moon-fill"></i> Tarde
+        </div>
+        <div class="slot-group-body">
           <button *ngFor="let slot of afternoonSlots()"
-                  class="btn btn-sm slot-chip"
+                  class="slot-btn"
                   [class.selected]="selectedSlot?.startTime === slot.startTime"
-                  [class.available]="selectedSlot?.startTime !== slot.startTime"
                   (click)="selectSlot(slot)">
-            {{ formatTime(slot.startTime) }}
+            <span class="slot-time">{{ formatTime(slot.startTime) }}</span>
           </button>
+          <div *ngIf="afternoonSlots().length === 0" class="slot-empty">Sin horarios</div>
         </div>
       </div>
       <div *ngIf="slots.length === 0" class="text-muted text-center py-3">
@@ -38,9 +42,16 @@ import { TimeSlotDTO } from '../../../core/models/scheduling.models';
     </div>
   `,
   styles: [`
-    .slot-chip { min-width: 80px; border-radius: 20px; font-size: 0.85rem; }
-    .slot-chip.available { background: #e3f2fd; color: #1565c0; border-color: #90caf9; }
-    .slot-chip.selected { background: #1976d2; color: white; border-color: #1565c0; }
+    .time-slots { display: flex; flex-direction: column; gap: 16px; }
+    .slot-group { border: 1px solid var(--bs-border-color); border-radius: 12px; overflow: hidden; }
+    .slot-group-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.85rem; font-weight: 600; background: var(--bs-tertiary-bg); border-bottom: 1px solid var(--bs-border-color); }
+    .slot-group-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; padding: 10px 14px; }
+    .slot-btn { border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 4px; background: var(--bs-body-bg); cursor: pointer; transition: all .15s; text-align: center; }
+    .slot-btn:hover { border-color: #1976d2; background: #e3f2fd; }
+    .slot-btn.selected { border-color: #1976d2; background: #1976d2; }
+    .slot-btn.selected .slot-time { color: white; }
+    .slot-time { font-size: 0.8rem; font-weight: 600; color: var(--bs-body-color); }
+    .slot-empty { font-size: 0.8rem; color: var(--bs-secondary-color); grid-column: 1 / -1; text-align: center; padding: 4px 0; }
   `]
 })
 export class TimeSlotChipsComponent {

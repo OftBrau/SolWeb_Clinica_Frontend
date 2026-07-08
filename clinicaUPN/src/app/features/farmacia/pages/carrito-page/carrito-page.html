@@ -1,8 +1,15 @@
-<div class="page-wrapper">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Carrito de Compras</h2>
+<div class="page-wrapper" style="max-width:1320px;margin:0 auto;padding:0 1rem">
+  <app-page-header
+    title="Carrito de Compras"
+    subtitle="Revisa los productos antes de pagar"
+    icon="bi-cart3"
+    [breadcrumbs]="[
+      { label: 'Inicio', link: '/app' },
+      { label: 'Farmacia', link: '/app/farmacia/productos' },
+      { label: 'Carrito' }
+    ]">
     <a routerLink="/app/farmacia/productos" class="btn btn-outline-secondary btn-sm">Seguir comprando</a>
-  </div>
+  </app-page-header>
 
   @if (cargando()) {
     <div class="text-center py-5"><div class="spinner-border"></div></div>

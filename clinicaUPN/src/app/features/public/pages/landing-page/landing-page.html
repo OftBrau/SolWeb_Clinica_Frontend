@@ -83,28 +83,27 @@
           {{ t('servicios.subtitle') }}
         </p>
       </div>
-      <!-- Flechas desktop -->
-      <div class="d-none d-md-flex gap-2">
-        <button
-          class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
-          style="width: 40px; height: 40px"
-          (click)="servicioScrollPrev()"
-        >
-          <i class="bi bi-arrow-left" style="font-size: 0.9rem"></i>
-        </button>
-        <button
-          class="btn btn-outline-secondary rounded-circle p-0 d-flex align-items-center justify-content-center"
-          style="width: 40px; height: 40px"
-          (click)="servicioScrollNext()"
-        >
-          <i class="bi bi-arrow-right" style="font-size: 0.9rem"></i>
-        </button>
-      </div>
+
     </div>
   </div>
 
   <!-- Carrusel full-width -->
   <div class="servicios-track-wrapper">
+    <!-- Flechas sobre imágenes -->
+    <button
+      class="servicio-arrow servicio-arrow--prev"
+      (click)="servicioScrollPrev()"
+      aria-label="Anterior"
+    >
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button
+      class="servicio-arrow servicio-arrow--next"
+      (click)="servicioScrollNext()"
+      aria-label="Siguiente"
+    >
+      <i class="bi bi-chevron-right"></i>
+    </button>
     <div
       class="servicios-track"
       [style.transform]="'translateX(calc(-' + servicioIndex() + ' * 340px))'"
@@ -113,7 +112,7 @@
         <div class="servicio-card" [class.servicio-card--active]="i === servicioIndex()">
           <!-- Imagen con overlay -->
           <div class="servicio-img-wrap">
-            <img [src]="s.imagen" [alt]="t(s.tituloKey)" class="servicio-img" />
+            <img [src]="s.imagen" [alt]="t(s.tituloKey)" class="servicio-img" loading="lazy" />
             <div class="servicio-overlay"></div>
             <!-- Contenido sobre imagen -->
             <div class="servicio-content">
@@ -151,51 +150,6 @@
     </div>
   </div>
 </section>
-
-<!-- PRODUCTOS DESTACADOS -->
-@if (productosDestacados().length > 0) {
-<section id="productos-destacados" class="py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-      <div>
-        <h2 class="fw-bold mb-1">Farmacia</h2>
-        <p class="text-muted mb-0">Productos destacados para tu bienestar</p>
-      </div>
-      <a routerLink="/farmacia" class="btn btn-outline-primary btn-sm">
-        Ver completo <i class="bi bi-arrow-right ms-1"></i>
-      </a>
-    </div>
-    <div class="row g-3">
-      @for (p of productosDestacados(); track p.idMedicamento) {
-        <div class="col-6 col-md-4 col-lg-2">
-          <div class="card h-100 border shadow-sm producto-mini">
-            @if (p.fotoUrl) {
-              <img [src]="p.fotoUrl" [alt]="p.nombreComercial" class="producto-mini-img">
-            } @else {
-              <div class="producto-mini-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" width="28" height="28" stroke="currentColor" stroke-width="1.2">
-                  <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 7h6M9 11h6M12 15v5" stroke-linecap="round"/>
-                </svg>
-              </div>
-            }
-            <div class="card-body d-flex flex-column p-3">
-              <span class="badge text-primary mb-2 align-self-start producto-cat-badge">
-                {{ p.categoria === 'MEDICAMENTO' ? 'Medicamento' : p.categoria === 'VITAMINA' ? 'Vitamina' : p.categoria === 'SUPLEMENTO' ? 'Suplemento' : 'Otro' }}
-              </span>
-              <h6 class="fw-semibold mb-1" style="font-size:0.85rem">{{ p.nombreComercial }}</h6>
-              <small class="text-muted mb-2">{{ p.nombreGenerico || p.laboratorio }}</small>
-              <div class="mt-auto">
-                <span class="fw-bold d-block mb-2" style="font-size:1rem">S/ {{ p.precioUnitario }}</span>
-                <a routerLink="/farmacia" class="btn btn-sm btn-primary w-100">Agregar al carrito</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-</section>
-}
 
 <!-- AGENDAR CITA -->
 <section id="agendar-cita" class="py-5 section-bg-card">
@@ -515,6 +469,137 @@
   </div>
 </section>
 
+<!-- CARRUSEL DE PRODUCTOS -->
+@if (productosCarousel().length > 0) {
+<section class="product-carousel-section" [class.carrusel-paused]="!carruselVisible()" (mouseenter)="onCarouselEnter()" (mouseleave)="onCarouselLeave()">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold mb-2">Nuestros Productos</h2>
+      <p class="text-muted mb-0">Descubre nuestra variedad de medicamentos y productos farmacéuticos</p>
+    </div>
+  </div>
+  <div class="product-carousel-inner">
+    <div class="product-carousel-track">
+      @for (item of productosCarousel(); track $index) {
+        @if (item.type === 'single') {
+          <div class="product-carousel-col col-single">
+            <div class="product-img-wrap">
+              <div class="product-flip-inner">
+                <div class="product-flip-front">
+                  @if (item.products[0].fotoUrl) {
+                    <img [src]="item.products[0].fotoUrl" [alt]="item.products[0].nombreComercial" loading="lazy" />
+                  } @else {
+                    <div class="product-carousel-placeholder">
+                      <i class="bi bi-box"></i>
+                    </div>
+                  }
+                  <div class="product-front-name">{{ item.products[0].nombreComercial }}</div>
+                </div>
+                <div class="product-flip-back">
+                  <div class="product-back-top">
+                    <h6>{{ item.products[0].nombreComercial }}</h6>
+                    <p>{{ item.products[0].descripcion || item.products[0].nombreGenerico || item.products[0].categoria }}</p>
+                  </div>
+                  <div class="product-back-bottom">
+                    <a routerLink="/farmacia" class="product-back-cta">Explorar más <i class="bi bi-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="product-carousel-col col-double">
+            @for (p of item.products; track $index) {
+              <div class="product-img-wrap">
+                <div class="product-flip-inner">
+                  <div class="product-flip-front">
+                    @if (p.fotoUrl) {
+                      <img [src]="p.fotoUrl" [alt]="p.nombreComercial" loading="lazy" />
+                    } @else {
+                      <div class="product-carousel-placeholder">
+                        <i class="bi bi-box"></i>
+                      </div>
+                    }
+                    <div class="product-front-name">{{ p.nombreComercial }}</div>
+                  </div>
+                  <div class="product-flip-back">
+                    <div class="product-back-top">
+                      <h6>{{ p.nombreComercial }}</h6>
+                      <p>{{ p.descripcion || p.nombreGenerico || p.categoria }}</p>
+                    </div>
+                    <div class="product-back-bottom">
+                      <a routerLink="/farmacia" class="product-back-cta">Explorar más <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+      <!-- Duplicado para loop infinito -->
+      @for (item of productosCarousel(); track $index) {
+        @if (item.type === 'single') {
+          <div class="product-carousel-col col-single">
+            <div class="product-img-wrap">
+              <div class="product-flip-inner">
+                <div class="product-flip-front">
+                  @if (item.products[0].fotoUrl) {
+                    <img [src]="item.products[0].fotoUrl" [alt]="item.products[0].nombreComercial" loading="lazy" />
+                  } @else {
+                    <div class="product-carousel-placeholder">
+                      <i class="bi bi-box"></i>
+                    </div>
+                  }
+                  <div class="product-front-name">{{ item.products[0].nombreComercial }}</div>
+                </div>
+                <div class="product-flip-back">
+                  <div class="product-back-top">
+                    <h6>{{ item.products[0].nombreComercial }}</h6>
+                    <p>{{ item.products[0].descripcion || item.products[0].nombreGenerico || item.products[0].categoria }}</p>
+                  </div>
+                  <div class="product-back-bottom">
+                    <a routerLink="/farmacia" class="product-back-cta">Explorar más <i class="bi bi-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="product-carousel-col col-double">
+            @for (p of item.products; track $index) {
+              <div class="product-img-wrap">
+                <div class="product-flip-inner">
+                  <div class="product-flip-front">
+                    @if (p.fotoUrl) {
+                      <img [src]="p.fotoUrl" [alt]="p.nombreComercial" loading="lazy" />
+                    } @else {
+                      <div class="product-carousel-placeholder">
+                        <i class="bi bi-box"></i>
+                      </div>
+                    }
+                    <div class="product-front-name">{{ p.nombreComercial }}</div>
+                  </div>
+                  <div class="product-flip-back">
+                    <div class="product-back-top">
+                      <h6>{{ p.nombreComercial }}</h6>
+                      <p>{{ p.descripcion || p.nombreGenerico || p.categoria }}</p>
+                    </div>
+                    <div class="product-back-bottom">
+                      <a routerLink="/farmacia" class="product-back-cta">Explorar más <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>
+}
+
 <!-- NOSOTROS -->
 <section id="nosotros" class="py-5">
   <div class="container">
@@ -559,6 +644,7 @@
                 [src]="logoUpn"
                 alt="Logo UPN"
                 style="height: 36px; width: auto; object-fit: contain"
+                loading="lazy"
               />
             </div>
             <div>
@@ -595,79 +681,115 @@
   </div>
 </section>
 
-<!-- ESPECIALIDADES CIRCULAR -->
+<!-- PRODUCTOS DESTACADOS -->
+@if (productosDestacados().length > 0) {
+<section id="productos-destacados" class="py-5 section-bg-card">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h2 class="fw-bold mb-1">Farmacia</h2>
+        <p class="text-muted mb-0">Productos destacados para tu bienestar</p>
+      </div>
+      <a routerLink="/farmacia" class="btn btn-outline-primary btn-sm">
+        Ver completo <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="productos-destacados-grid">
+      <button class="productos-grid-arrow productos-grid-arrow-left" (click)="scrollDestacados(-1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <div class="productos-destacados-scroll" #destacadosScroll>
+        @for (p of productosDestacados(); track p.idMedicamento) {
+          <div class="producto-destacado-item">
+            <div class="card h-100 border shadow-sm producto-mini">
+              @if (p.fotoUrl) {
+                <img [src]="p.fotoUrl" [alt]="p.nombreComercial" loading="lazy" class="producto-mini-img">
+              } @else {
+                <div class="producto-mini-placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" width="28" height="28" stroke="currentColor" stroke-width="1.2">
+                    <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 7h6M9 11h6M12 15v5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              }
+              <div class="card-body d-flex flex-column p-3">
+                <span class="badge text-primary mb-2 align-self-start producto-cat-badge">
+                  {{ p.categoria === 'MEDICAMENTO' ? 'Medicamento' : p.categoria === 'VITAMINA' ? 'Vitamina' : p.categoria === 'SUPLEMENTO' ? 'Suplemento' : 'Otro' }}
+                </span>
+                <h6 class="fw-semibold mb-1" style="font-size:0.85rem">{{ p.nombreComercial }}</h6>
+                <small class="text-muted mb-2">{{ p.nombreGenerico || p.laboratorio }}</small>
+                <div class="mt-auto">
+                  <span class="fw-bold d-block mb-2" style="font-size:1rem">S/ {{ p.precioUnitario }}</span>
+                  <a routerLink="/farmacia" class="btn btn-sm btn-primary w-100">Agregar al carrito</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <button class="productos-grid-arrow productos-grid-arrow-right" (click)="scrollDestacados(1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+}
+
 <!-- ESPECIALIDADES -->
 <section id="especialidades" class="py-5 esp-section">
   <div class="container">
     <h2 class="text-center fw-bold mb-2">{{ t('esp.title') }}</h2>
-    <p class="text-center text-muted mb-5">{{ t('esp.subtitle') }}</p>
+    <p class="text-center text-muted mb-5 pb-5">{{ t('esp.subtitle') }}</p>
 
-    <div class="circular-wrapper">
-      <!-- Imágenes -->
-      <div class="circular-images">
-        @for (e of especialidades(); track e.nombre; let i = $index) {
-          <div class="circ-img-wrap" [class]="getCardClass(i)" (click)="servicioGoTo(i)">
-            <img [src]="e.foto" [alt]="e.nombre" class="circ-img" />
-            <div class="circ-img-badge">{{ e.nombre }}</div>
-          </div>
-        }
-      </div>
-
-      <!-- Contenido activo -->
-      @if (especialidades().length > 0) {
-        <div class="circular-content">
-          <div class="circ-avatar-wrap mb-3">
-            <img
-              [src]="especialidades()[activeIndex()].foto"
-              [alt]="especialidades()[activeIndex()].nombre"
-              class="circ-avatar"
-            />
-            <div class="circ-avatar-ring"></div>
-          </div>
-
+    @if (especialidades().length > 0) {
+      <!-- Doctor destacado -->
+      <div class="esp-featured">
+        <div class="esp-featured-avatar">
+          <img
+            [src]="especialidades()[activeIndex()].foto"
+            [alt]="especialidades()[activeIndex()].nombre"
+            loading="lazy"
+          />
+          <div class="esp-featured-ring"></div>
+        </div>
+        <div class="esp-featured-info">
           <h3 class="fw-bold mb-1">{{ especialidades()[activeIndex()].nombre }}</h3>
           <p class="fw-semibold mb-2 text-brand" style="font-size: 14px;">
             {{ especialidades()[activeIndex()].especialidad }}
           </p>
-
           @if (especialidades()[activeIndex()].descripcion) {
             <p class="text-muted mb-1" style="font-size: 0.85rem; line-height: 1.5;">
               {{ especialidades()[activeIndex()].descripcion }}
             </p>
           }
-
           @if (especialidades()[activeIndex()].bibliografia) {
             <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.5; opacity: 0.8;">
               <i class="bi bi-book me-1"></i> {{ especialidades()[activeIndex()].bibliografia }}
             </p>
           }
-
-          <div class="circ-dots mt-3">
-            @for (e of especialidades(); track e.nombre; let i = $index) {
-              <span class="circ-dot" [class.active]="i === activeIndex()" (click)="servicioGoTo(i)">
-              </span>
-            }
-          </div>
-
-          <div class="circ-arrows mt-3">
-            <button class="circ-btn" (click)="goPrev()">
-              <i class="bi bi-arrow-left"></i>
-            </button>
-            <button class="circ-btn" (click)="goNext()">
-              <i class="bi bi-arrow-right"></i>
-            </button>
-          </div>
         </div>
-      }
-    </div>
+      </div>
+
+      <!-- Fila de doctores -->
+      <div class="esp-row mt-5">
+        @for (e of especialidades(); track e.nombre; let i = $index) {
+          <div class="esp-row-card" [class.active]="i === activeIndex()" (click)="servicioGoTo(i)">
+            <div class="esp-row-img-wrap">
+              <img [src]="e.foto" [alt]="e.nombre" loading="lazy" />
+            </div>
+            <span class="esp-row-name">{{ e.nombre }}</span>
+            <span class="esp-row-esp">{{ e.especialidad }}</span>
+          </div>
+        }
+      </div>
+    }
   </div>
 </section>
 
 <!-- CONTACTO -->
 <section id="contacto" class="py-5 bg-light">
   <div class="container">
-    <h2 class="text-center fw-bold mb-2">{{ t('contact.title') }}</h2>
-    <p class="text-center text-muted mb-5">{{ t('contact.subtitle') }}</p>
+    <h2 class="text-center fw-bold mb-2">Ponte en contacto</h2>
+    <p class="text-center text-muted mb-5" style="max-width: 600px; margin-left: auto; margin-right: auto;">Si tienes preguntas sobre nuestros servicios o necesitas ayuda, completa el formulario. Respondemos dentro de 1 día hábil.</p>
 
     <div class="contact-card position-relative">
       <!-- Esquinas + -->
@@ -678,58 +800,49 @@
 
       <div class="row g-0 h-100">
         <!-- IZQUIERDA -->
-        <div class="col-lg-8 p-4 p-md-5">
-          <h3 class="fw-bold mb-3" style="font-size: clamp(1.5rem, 3vw, 2.5rem)">
-            {{ t('contact.cardTitle') }}
-          </h3>
-          <p class="text-muted mb-4" style="max-width: 520px">
-            {{ t('contact.cardDesc') }}
-          </p>
+        <div class="col-lg-7 p-4 p-md-5 d-flex flex-column">
 
-          <div class="row g-3">
-            <div class="col-sm-4">
-                <div class="contact-info-item">
-                  <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
-                  <div>
-                    <p class="fw-semibold mb-0 small">{{ t('contact.emailLabel') }}</p>
-                    <p class="text-muted mb-0" style="font-size: 12px">clinica&#64;upn.edu.pe</p>
-                  </div>
+          <h5 class="fw-bold mb-3">Información</h5>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">{{ t('contact.scheduleLabel') }}</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">{{ t('contact.scheduleValue') }}</p>
                 </div>
               </div>
-              <div class="col-sm-4">
-                <div class="contact-info-item">
-                  <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
-                  <div>
-                    <p class="fw-semibold mb-0 small">{{ t('contact.phoneLabel') }}</p>
-                    <p class="text-muted mb-0" style="font-size: 12px">(01) 123-4567</p>
-                  </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="contact-info-item">
+                <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div>
+                  <p class="fw-semibold mb-0 small">{{ t('contact.addressLabel') }}</p>
+                  <p class="text-muted mb-0" style="font-size: 12px">
+                    {{ t('contact.addressValue') }}
+                  </p>
                 </div>
               </div>
-              <div class="col-sm-4">
-                <div class="contact-info-item">
-                  <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
-                  <div>
-                    <p class="fw-semibold mb-0 small">{{ t('contact.scheduleLabel') }}</p>
-                    <p class="text-muted mb-0" style="font-size: 12px">{{ t('contact.scheduleValue') }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="contact-info-item">
-                  <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                  <div>
-                    <p class="fw-semibold mb-0 small">{{ t('contact.addressLabel') }}</p>
-                    <p class="text-muted mb-0" style="font-size: 12px">
-                      {{ t('contact.addressValue') }}
-                    </p>
-                </div>
-              </div>
+            </div>
+          </div>
+
+          <!-- MAPA -->
+          <div class="contact-map-wrap flex-grow-1">
+            <div #mapContainer class="contact-map-container h-100"></div>
+            <div class="contact-map-actions">
+              <button class="btn btn-primary btn-sm" (click)="mostrarRuta()">
+                <i class="bi bi-signpost-2-fill"></i> Cómo llegar
+              </button>
+              <button class="btn btn-outline-light btn-sm" (click)="abrirMaps()">
+                <i class="bi bi-google"></i> Maps
+              </button>
             </div>
           </div>
         </div>
 
         <!-- DERECHA formulario -->
-        <div class="col-lg-4 contact-form-side p-4 p-md-5">
+        <div class="col-lg-5 contact-form-side p-4 p-md-5">
           <div class="mb-3">
             <label class="form-label small fw-semibold">{{ t('contact.formName') }}</label>
             <input
@@ -749,6 +862,16 @@
           <div class="mb-3">
             <label class="form-label small fw-semibold">{{ t('contact.formPhone') }}</label>
             <input type="tel" class="form-control form-control-sm" placeholder="{{ t('contact.formPhonePlace') }}" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ t('contact.formSubject') }}</label>
+            <select class="form-select form-select-sm">
+              <option value="" disabled selected>{{ t('contact.formSubjectPlace') }}</option>
+              <option value="general">{{ t('contact.subjectGeneral') }}</option>
+              <option value="citas">{{ t('contact.subjectCitas') }}</option>
+              <option value="quejas">{{ t('contact.subjectQuejas') }}</option>
+              <option value="otro">{{ t('contact.subjectOtro') }}</option>
+            </select>
           </div>
           <div class="mb-3">
             <label class="form-label small fw-semibold">{{ t('contact.formMessage') }}</label>
@@ -781,6 +904,7 @@
               [src]="logoUpn"
               alt="Logo UPN"
               style="height: 28px; width: auto; object-fit: contain"
+              loading="lazy"
             />
           </div>
           <div>
