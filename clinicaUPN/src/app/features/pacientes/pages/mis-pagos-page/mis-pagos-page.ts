@@ -30,7 +30,8 @@ import { PacienteService } from '../../services/paciente';
             <tr>
               <th># Cita</th>
               <th>Monto</th>
-              <th>Metodo</th>
+              <th>Método</th>
+              <th>Código SUNAT</th>
               <th>Estado</th>
               <th>Referencia MP</th>
               <th>Fecha</th>
@@ -41,6 +42,11 @@ import { PacienteService } from '../../services/paciente';
               <td><strong>#{{ p.idCita }}</strong></td>
               <td>S/ {{ p.monto }}</td>
               <td>{{ p.metodoPago }}</td>
+              <td>
+                <span *ngIf="p.codigoSunat === '003'" class="badge bg-info">003 Factura</span>
+                <span *ngIf="p.codigoSunat === '005'" class="badge bg-info">005 Boleta</span>
+                <span *ngIf="!p.codigoSunat" class="text-muted">—</span>
+              </td>
               <td><span class="badge" [class]="estadoClass(p.estadoPago)">{{ p.estadoPago }}</span></td>
               <td><small class="text-muted">{{ p.referenciaMp || '—' }}</small></td>
               <td>{{ p.fechaPago ? (p.fechaPago | date:'dd/MM/yy HH:mm') : '—' }}</td>

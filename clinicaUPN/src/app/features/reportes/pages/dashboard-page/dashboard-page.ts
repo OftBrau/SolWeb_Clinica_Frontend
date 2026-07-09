@@ -9,29 +9,22 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
   standalone: true,
   imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './dashboard-page.html',
-  styles: [`
-    .stat-card { background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
-    .stat-value { font-size: 1.8rem; font-weight: 700; }
-    .stat-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--bs-secondary-color); }
-    .bar-chart { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .bar-label { min-width: 130px; font-size: .85rem; text-align: right; }
-    .bar-track { flex: 1; height: 22px; background: var(--bs-tertiary-bg); border-radius: 6px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 6px; min-width: 4px; display: flex; align-items: center; padding-left: 8px; color: #fff; font-size: .7rem; font-weight: 600; }
-    .max-w { max-width: 1100px; margin: 0 auto; }
-  `]
+  styleUrl: './dashboard-page.css'
 })
 export class DashboardPageComponent implements OnInit {
   private http = inject(HttpClient);
   fecha = signal(new Date().toISOString().split('T')[0]);
   data = signal<any>(null);
   cargando = signal(false);
+  errorMsg = signal('');
 
   ngOnInit() { this.cargar(); }
 
   cargar() {
     this.cargando.set(true);
+    this.errorMsg.set('');
     this.http.get<{data: any}>(`http://localhost:8080/api/reportes/operativo-diario?fecha=${this.fecha()}`)
-      .subscribe({ next: r => { this.data.set(r.data); this.cargando.set(false); }, error: () => this.cargando.set(false) });
+      .subscribe({ next: r => { this.data.set(r.data); this.cargando.set(false); }, error: () => { this.cargando.set(false); this.errorMsg.set('Error al cargar reporte'); } });
   }
 
   maxCant(list: any[]): number {
@@ -40,11 +33,9 @@ export class DashboardPageComponent implements OnInit {
   }
 
   barColor(i: number): string {
-    const colors = ['#0d6efd','#198754','#dc3545','#fd7e14','#6f42c1','#0dcaf0','#d63384','#20c997'];
+    const colors = ['#4f46e5','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#db2777','#65a30d'];
     return colors[i % colors.length];
   }
-
-  errorMsg = signal('');
 
   descargarPDF(): void {
     this.errorMsg.set('');

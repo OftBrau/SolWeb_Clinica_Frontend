@@ -1,53 +1,72 @@
-<div class="content-wrapper">
+<div class="reports-container content-wrapper">
   <app-page-header title="Reportes" subtitle="Reportes y estadísticas operativas"
     [breadcrumbs]="[{label:'Inicio',link:'/app'},{label:'Reportes'}]">
-    <div class="d-flex gap-2 align-items-center">
-      <input type="date" class="form-control form-control-sm" style="width:160px" [ngModel]="fecha()" (ngModelChange)="fecha.set($event); cargar()">
-      <button class="btn btn-sm btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
-      <button class="btn btn-sm btn-outline-info" (click)="descargarPDF()" title="Descargar PDF"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
-      <button class="btn btn-sm btn-outline-success" (click)="descargarExcel()" title="Descargar Excel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <input type="date" class="fecha-input-report" [ngModel]="fecha()" (ngModelChange)="fecha.set($event); cargar()">
+      <button class="btn-action" (click)="cargar()" title="Actualizar">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+      <button class="btn-action btn-pdf" (click)="descargarPDF()" title="Descargar PDF">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+      <button class="btn-action btn-excel" (click)="descargarExcel()" title="Descargar Excel">
+        <i class="bi bi-file-earmark-excel"></i> Excel
+      </button>
     </div>
   </app-page-header>
 
-  @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
+  @if (cargando()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando reporte...</p>
+    </div>
+  }
 
   @if (errorMsg(); as msg) {
-    <div class="alert alert-danger py-2 small">{{ msg }}</div>
+    <div class="error-msg">{{ msg }}</div>
   }
 
   @if (data(); as d) {
     @if (d.resumen) {
-      <h6 class="mb-3">Resumen del día</h6>
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value text-primary">{{ d.resumen.totalCitas || 0 }}</div><div class="stat-label">Total Citas</div></div>
+      <div class="section-label">Resumen del día</div>
+      <div class="stats-row">
+        <div class="mini-card card-total">
+          <div class="mini-value text-primary">{{ d.resumen.totalCitas || 0 }}</div>
+          <div class="mini-label">Total Citas</div>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value" style="color:#198754">{{ d.resumen.confirmadas || 0 }}</div><div class="stat-label">Confirmadas</div></div>
+        <div class="mini-card card-confirm">
+          <div class="mini-value" style="color:#16a34a">{{ d.resumen.confirmadas || 0 }}</div>
+          <div class="mini-label">Confirmadas</div>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value" style="color:#0d6efd">{{ d.resumen.atendidas || 0 }}</div><div class="stat-label">Atendidas</div></div>
+        <div class="mini-card card-atend">
+          <div class="mini-value" style="color:#2563eb">{{ d.resumen.atendidas || 0 }}</div>
+          <div class="mini-label">Atendidas</div>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value text-danger">{{ d.resumen.canceladas || 0 }}</div><div class="stat-label">Canceladas</div></div>
+        <div class="mini-card card-cancel">
+          <div class="mini-value" style="color:#dc2626">{{ d.resumen.canceladas || 0 }}</div>
+          <div class="mini-label">Canceladas</div>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value text-warning">{{ d.resumen.noAsistieron || 0 }}</div><div class="stat-label">No Asistieron</div></div>
+        <div class="mini-card card-noshow">
+          <div class="mini-value" style="color:#d97706">{{ d.resumen.noAsistieron || 0 }}</div>
+          <div class="mini-label">No Asistieron</div>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <div class="stat-card"><div class="stat-value" style="color:#6f42c1">{{ d.resumen.pacientesAtendidos || 0 }}</div><div class="stat-label">Pacientes</div></div>
+        <div class="mini-card card-pac">
+          <div class="mini-value" style="color:#7c3aed">{{ d.resumen.pacientesAtendidos || 0 }}</div>
+          <div class="mini-label">Pacientes</div>
         </div>
       </div>
     }
 
     @if (d.porEspecialidad?.length) {
-      <h6>Citas por especialidad</h6>
-      <div class="mb-4">
+      <div class="section-label">Citas por especialidad</div>
+      <div class="chart-section mb-4">
         @for (e of d.porEspecialidad; track e.especialidad; let i = $index) {
-          <div class="bar-chart">
-            <div class="bar-label small">{{ e.especialidad }}</div>
-            <div class="bar-track">
-              <div class="bar-fill" [style.width]="(e.cantidad / maxCant(d.porEspecialidad) * 100) + '%'" [style.background]="barColor(i)">{{ e.cantidad }}</div>
+          <div class="bar-item">
+            <div class="bar-label-text">{{ e.especialidad }}</div>
+            <div class="bar-track-report">
+              <div class="bar-fill-report" [style.width]="(e.cantidad / maxCant(d.porEspecialidad) * 100) + '%'" [style.background]="barColor(i)">
+                <span class="bar-value-label">{{ e.cantidad }}</span>
+              </div>
             </div>
           </div>
         }
@@ -55,16 +74,28 @@
     }
 
     @if (d.porDoctor?.length) {
-      <h6>Citas por doctor</h6>
+      <div class="section-label">Citas por doctor</div>
       <div class="table-responsive">
-        <table class="table table-sm table-hover">
-          <thead><tr><th>Doctor</th><th>Especialidad</th><th class="text-end">Citas</th></tr></thead>
+        <table class="table doctor-table">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Especialidad</th>
+              <th class="text-end">Citas</th>
+              <th>Proporción</th>
+            </tr>
+          </thead>
           <tbody>
             @for (doc of d.porDoctor; track doc.nombreDoctor) {
               <tr>
-                <td>{{ doc.nombreDoctor }}</td>
-                <td><span class="badge bg-light text-dark">{{ doc.especialidad }}</span></td>
-                <td class="text-end fw-bold">{{ doc.cantidad }}</td>
+                <td class="fw-semibold">{{ doc.nombreDoctor }}</td>
+                <td><span class="tag-spec">{{ doc.especialidad }}</span></td>
+                <td class="text-end"><span class="count-badge">{{ doc.cantidad }}</span></td>
+                <td style="width:160px">
+                  <div class="mini-bar">
+                    <div class="mini-bar-fill" [style.width.%]="(doc.cantidad / maxCant(d.porDoctor)) * 100"></div>
+                  </div>
+                </td>
               </tr>
             }
           </tbody>
@@ -74,6 +105,9 @@
   }
 
   @if (!data() && !cargando()) {
-    <p class="text-muted text-center py-5">Seleccioná una fecha para ver el reporte.</p>
+    <div class="empty-state">
+      <i class="bi bi-file-earmark-bar-graph"></i>
+      <p>Seleccioná una fecha para ver el reporte.</p>
+    </div>
   }
 </div>
