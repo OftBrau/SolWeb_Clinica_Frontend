@@ -33,6 +33,9 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
             <button class="btn btn-sm btn-primary" (click)="asignarTarea()">Asignar</button>
           </div>
         }
+        @if (mensajeError()) {
+          <div class="alert alert-danger py-2 mt-2 mb-0"><i class="bi bi-exclamation-triangle me-1"></i>{{ mensajeError() }}</div>
+        }
       </app-page-header>
 
       <div class="row g-3">
@@ -105,10 +108,14 @@ export class TareasPageComponent implements OnInit {
     this.http.put(`http://localhost:8080/api/practicante/tareas/${id}/estado`, { estado }).subscribe({ next: () => this.cargar() });
   }
 
+  mensajeError = signal('');
+
   asignarTarea() {
     if (!this.nuevaTarea.idPracticante || !this.nuevaTarea.titulo) return;
+    this.mensajeError.set('');
     this.http.post('http://localhost:8080/api/practicante/tareas', this.nuevaTarea).subscribe({
-      next: () => { this.cargar(); this.nuevaTarea.titulo = ''; }
+      next: () => { this.cargar(); this.nuevaTarea.titulo = ''; },
+      error: (err) => { this.mensajeError.set(err.error?.message || 'Error al asignar tarea'); }
     });
   }
 }

@@ -4,10 +4,16 @@
     <div class="d-flex gap-2 align-items-center">
       <input type="date" class="form-control form-control-sm" style="width:160px" [ngModel]="fecha()" (ngModelChange)="fecha.set($event); cargar()">
       <button class="btn btn-sm btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+      <button class="btn btn-sm btn-outline-info" (click)="descargarPDF()" title="Descargar PDF"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+      <button class="btn btn-sm btn-outline-success" (click)="descargarExcel()" title="Descargar Excel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
     </div>
   </app-page-header>
 
   @if (cargando()) { <div class="text-center py-5"><div class="spinner-border"></div></div> }
+
+  @if (errorMsg(); as msg) {
+    <div class="alert alert-danger py-2 small">{{ msg }}</div>
+  }
 
   @if (data(); as d) {
     @if (d.resumen) {

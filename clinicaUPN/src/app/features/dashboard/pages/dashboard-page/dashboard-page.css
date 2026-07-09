@@ -39,6 +39,39 @@
   cursor: pointer;
 }
 
+.download-group {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-download:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-download-excel {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+.btn-download-excel:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
 /* -------- stat cards -------- */
 .cards-grid {
   display: grid;

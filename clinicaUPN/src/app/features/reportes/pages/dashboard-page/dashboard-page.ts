@@ -43,4 +43,44 @@ export class DashboardPageComponent implements OnInit {
     const colors = ['#0d6efd','#198754','#dc3545','#fd7e14','#6f42c1','#0dcaf0','#d63384','#20c997'];
     return colors[i % colors.length];
   }
+
+  errorMsg = signal('');
+
+  descargarPDF(): void {
+    this.errorMsg.set('');
+    const url = `http://localhost:8080/api/reportes/operativo-diario/pdf?fecha=${this.fecha()}`;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `reporte-diario-${this.fecha()}.pdf`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      },
+      error: () => this.errorMsg.set('Error al descargar PDF. Verifica que tengas permisos de administrador.')
+    });
+  }
+
+  descargarExcel(): void {
+    this.errorMsg.set('');
+    const url = `http://localhost:8080/api/reportes/operativo-diario/excel?fecha=${this.fecha()}`;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `reporte-diario-${this.fecha()}.xlsx`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      },
+      error: () => this.errorMsg.set('Error al descargar Excel. Verifica que tengas permisos de administrador.')
+    });
+  }
 }

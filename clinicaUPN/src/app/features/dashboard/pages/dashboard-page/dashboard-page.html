@@ -20,6 +20,16 @@
       <i data-lucide="calendar" style="width:16px;height:16px;vertical-align:middle;margin-right:6px"></i>
       Reporte del:
       <input type="date" [value]="fecha()" (change)="fecha.set($any($event.target).value); cargarReporte()" class="fecha-input">
+      <div class="download-group">
+        <button class="btn-download" (click)="descargarPDF()" title="Descargar PDF">
+          <i data-lucide="file-down" style="width:16px;height:16px"></i>
+          PDF
+        </button>
+        <button class="btn-download btn-download-excel" (click)="descargarExcel()" title="Descargar Excel">
+          <i data-lucide="file-down" style="width:16px;height:16px"></i>
+          Excel
+        </button>
+      </div>
     </div>
 
     <div class="cards-grid">

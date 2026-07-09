@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { DashboardService, ReporteDiario } from '../../services/dashboard.service';
-import { createIcons, ClipboardList, CheckCircle, Stethoscope, XCircle, CalendarX, Users, UserCheck, Calendar, Activity, ArrowUpRight } from 'lucide';
+import { createIcons, ClipboardList, CheckCircle, Stethoscope, XCircle, CalendarX, Users, UserCheck, Calendar, Activity, ArrowUpRight, FileDown } from 'lucide';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -13,6 +14,7 @@ import { createIcons, ClipboardList, CheckCircle, Stethoscope, XCircle, Calendar
 })
 export class DashboardPageComponent implements OnInit, AfterViewInit {
   private dashboardService = inject(DashboardService);
+  private http = inject(HttpClient);
 
   reporte = signal<ReporteDiario | null>(null);
   loading = signal(true);
@@ -36,6 +38,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
         'calendar': Calendar,
         'activity': Activity,
         'arrow-up-right': ArrowUpRight,
+        'file-down': FileDown,
       },
     });
   }
@@ -57,5 +60,43 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
 
   maxCantidad(items: { cantidad: number }[]): number {
     return Math.max(...items.map(i => i.cantidad), 1);
+  }
+
+  descargarPDF(): void {
+    this.error.set('');
+    const url = `http://localhost:8080/api/reportes/operativo-diario/pdf?fecha=${this.fecha()}`;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `reporte-diario-${this.fecha()}.pdf`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      },
+      error: () => this.error.set('Error al descargar PDF. Verifica que tengas permisos de administrador.')
+    });
+  }
+
+  descargarExcel(): void {
+    this.error.set('');
+    const url = `http://localhost:8080/api/reportes/operativo-diario/excel?fecha=${this.fecha()}`;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `reporte-diario-${this.fecha()}.xlsx`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      },
+      error: () => this.error.set('Error al descargar Excel. Verifica que tengas permisos de administrador.')
+    });
   }
 }
